@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISM PMI Research Dashboard | Marlon Whittock</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #0f1520;
+  --bg-card: #151d2e;
+  --bg-card-hover: #1a2538;
+  --border-color: #1e2d44;
+  --border-accent: #2a3f5f;
+  --text-primary: #e8edf5;
+  --text-secondary: #c0d0e8;
+  --text-muted: #94a8c4;
+  --accent-blue: #4a9eff;
+  --accent-green: #00d4aa;
+  --accent-red: #ff4a6e;
+  --accent-yellow: #ffc04a;
+  --accent-orange: #ff8c4a;
+  --accent-purple: #a855f7;
+  --accent-cyan: #22d3ee;
+  --expansion: #00d4aa;
+  --contraction: #ff4a6e;
+  --neutral-zone: #ffc04a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'DM Sans', 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+/* Header */
+.header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem 0;
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg-primary);
+  backdrop-filter: blur(20px);
+}
+.header-inner {
+  max-width: 1600px; margin: 0 auto; padding: 0 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.logo-mark {
+  width: 42px; height: 42px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.15rem; color: var(--bg-primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+.logo-text { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.02em; }
+.logo-text span { color: var(--text-muted); font-weight: 400; }
+.nav { display: flex; gap: 2rem; }
+.nav a {
+  color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;
+  font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav a:hover { color: var(--accent-green); }
+.nav a.active { color: var(--accent-green); }
+
+.dashboard-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.dashboard-header {
+  padding: 3rem 0 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 30px;
+}
+.dashboard-header h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dashboard-header .hero-intro {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0,212,170,0.1);
+  color: var(--expansion);
+  padding: 0.35rem 0.85rem;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(0,212,170,0.25);
+}
+.hero-tag .dot {
+  width: 6px; height: 6px;
+  background: var(--expansion);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.hero-meta {
+  display: flex;
+  gap: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.hero-meta-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.hero-meta-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+.dashboard-header .date-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 16px;
+  background: rgba(74, 158, 255, 0.1);
+  border: 1px solid rgba(74, 158, 255, 0.25);
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent-blue);
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+.section-header h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.section-header .section-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tag-mfg { background: rgba(74, 158, 255, 0.15); color: var(--accent-blue); border: 1px solid rgba(74, 158, 255, 0.3); }
+.tag-svc { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
+.tag-combined { background: rgba(0, 212, 170, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 212, 170, 0.3); }
+
+/* Tab Navigation */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+.tab-btn.active { background: var(--bg-card); color: var(--accent-blue); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border-accent); }
+.card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.kpi-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.kpi-card.expansion::before { background: var(--expansion); }
+.kpi-card.contraction::before { background: var(--contraction); }
+.kpi-card.neutral::before { background: var(--neutral-zone); }
+.kpi-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.kpi-value.expansion { color: var(--expansion); }
+.kpi-value.contraction { color: var(--contraction); }
+.kpi-value.neutral { color: var(--neutral-zone); }
+.kpi-change {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.kpi-change.up { color: var(--expansion); }
+.kpi-change.down { color: var(--contraction); }
+.kpi-trend {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Charts */
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.chart-container { position: relative; height: 320px; }
+.chart-container.tall { height: 400px; }
+
+/* Heat Map Table */
+.heat-map-wrapper { overflow-x: auto; }
+.heat-map {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+}
+.heat-map th {
+  padding: 10px 12px;
+  text-align: center;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  white-space: nowrap;
+}
+.heat-map th:first-child { text-align: left; }
+.heat-map td {
+  padding: 8px 12px;
+  text-align: center;
+  border-bottom: 1px solid rgba(30,45,68,0.5);
+  font-weight: 600;
+}
+.heat-map td:first-child {
+  text-align: left;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.heat-map tr:hover { background: rgba(255,255,255,0.02); }
+
+/* GDP Section */
+.gdp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.gdp-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 18px;
+}
+.gdp-card h4 {
+  font-size: 0.92rem;
+  color: var(--accent-blue);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.gdp-card .gdp-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.gdp-card p {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Trade Ideas */
+.trade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.trade-card {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 18px;
+  border-left: 3px solid;
+}
+.trade-card.overweight { border-left-color: var(--expansion); }
+.trade-card.underweight { border-left-color: var(--contraction); }
+.trade-card h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.trade-card.overweight h4 { color: var(--expansion); }
+.trade-card.underweight h4 { color: var(--contraction); }
+.trade-card p { font-size: 0.8rem; color: var(--text-primary); line-height: 1.5; }
+.trade-signal {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+.trade-signal.buy { background: rgba(0,212,170,0.15); color: var(--expansion); }
+.trade-signal.sell { background: rgba(255,74,110,0.15); color: var(--contraction); }
+
+/* Sector Rankings */
+.sector-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(30,45,68,0.3);
+}
+.sector-bar:last-child { border-bottom: none; }
+.sector-name {
+  width: 280px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+.sector-bar-track {
+  flex: 1;
+  height: 20px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.sector-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  position: absolute;
+  transition: width 0.6s;
+}
+.sector-bar-fill.positive { background: linear-gradient(90deg, rgba(0,212,170,0.3), rgba(0,212,170,0.7)); left: 50%; }
+.sector-bar-fill.negative { background: linear-gradient(270deg, rgba(255,74,110,0.3), rgba(255,74,110,0.7)); right: 50%; }
+.sector-score {
+  width: 50px;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-left: 12px;
+}
+.sector-score.positive { color: var(--expansion); }
+.sector-score.negative { color: var(--contraction); }
+
+/* Industry Comments */
+.comment-section { margin-bottom: 16px; }
+.comment-sector {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-color);
+}
+.comment-quote {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 2px solid var(--accent-blue);
+  font-style: italic;
+}
+
+/* Divergence Banner */
+.divergence-banner {
+  background: linear-gradient(135deg, rgba(74,158,255,0.08), rgba(168,85,247,0.08));
+  border: 1px solid rgba(74,158,255,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.divergence-side { text-align: center; }
+.divergence-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.divergence-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+.divergence-vs {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.divergence-spread {
+  text-align: center;
+  margin-top: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent-purple);
+}
+
+/* Footer */
+.dashboard-footer {
+  text-align: center;
+  padding: 30px 20px;
+  margin-top: 40px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .chart-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .sector-name { width: 180px; font-size: 0.7rem; }
+  #svc-overview > div[style*="repeat(4"] { grid-template-columns: repeat(2, 1fr) !important; }
+  .hero-meta { flex-wrap: wrap; gap: 1.5rem; }
+  .nav { display: none; }
+}
+@media (max-width: 600px) {
+  .dashboard-container { padding: 12px; }
+  .dashboard-header h1 { font-size: 1.7rem; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  #svc-overview > div[style*="repeat(4"] { grid-template-columns: repeat(2, 1fr) !important; }
+  .hero-meta { flex-direction: column; gap: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html" style="text-decoration:none; color:inherit;">
+      <div class="logo-mark">MW</div>
+      <div class="logo-text">Marlon Whittock <span>| Macro Research</span></div>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="fixed-income.html">Fixed Income</a>
+      <a href="ism-pmi-dashboard.html" class="active">ISM PMI &amp; NMI</a>
+    </nav>
+  </div>
+</header>
+
+<div class="dashboard-container">
+
+<!-- Header -->
+<div id="top" class="dashboard-header">
+  <div class="hero-tag"><span class="dot"></span> Live Research</div>
+  <h1>ISM PMI &amp; NMI<br>Economic Activity Analysis</h1>
+  <div class="hero-intro">
+    The Institute for Supply Management (ISM) publishes two monthly surveys that serve as the most widely followed leading indicators of U.S. economic activity. The <strong>Manufacturing PMI</strong> tracks the goods-producing sector through purchasing manager responses on new orders, production, employment, deliveries, and inventories. The <strong>Non-Manufacturing NMI</strong> (Services) covers the other 68% of the economy &mdash; everything from healthcare and finance to technology and construction. Together, these reports tell you where GDP, corporate earnings, employment, and inflation are headed before the official data confirms it. A reading above 50 signals expansion; below 50 signals contraction. The further from 50, the stronger the signal.
+  </div>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Data As Of</span>
+      <span class="hero-meta-value">February 2026</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Coverage</span>
+      <span class="hero-meta-value">ISM Manufacturing PMI &middot; ISM Services NMI</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Update Frequency</span>
+      <span class="hero-meta-value">Monthly</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Manufacturing</span>
+      <span class="hero-meta-value" style="color: var(--accent-blue);">52.4 &middot; Expansion</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Services</span>
+      <span class="hero-meta-value" style="color: var(--accent-purple);">56.1 &middot; Expansion</span>
+    </div>
+  </div>
+</div>
+
+<!-- Macro Overview: What the Data Means -->
+<div id="macro" class="section-header">
+  <h2>What the Data Means</h2>
+  <span class="section-tag tag-combined">MACRO OVERVIEW</span>
+</div>
+
+<!-- Headline Readings Side by Side -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+  <div class="card" style="margin-bottom:0; text-align:center;">
+    <div class="card-title">Manufacturing PMI</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:2.6rem; font-weight:700; color:var(--accent-blue); margin:8px 0;">52.4</div>
+    <div style="font-size:0.8rem; color:var(--expansion); font-weight:500;">Expansion &middot; Moderating</div>
+    <div style="font-size:0.72rem; color:var(--text-muted); margin-top:6px;">First back-to-back expansion since Oct 2022</div>
+  </div>
+  <div class="card" style="margin-bottom:0; text-align:center;">
+    <div class="card-title">Services NMI</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:2.6rem; font-weight:700; color:var(--accent-purple); margin:8px 0;">56.1</div>
+    <div style="font-size:0.8rem; color:var(--expansion); font-weight:500;">Expansion &middot; Accelerating</div>
+    <div style="font-size:0.72rem; color:var(--text-muted); margin-top:6px;">Highest reading since February 2023</div>
+  </div>
+</div>
+
+<!-- What It Means For... -->
+<div class="card">
+  <div class="card-title">Implications for the Economy & Markets</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+    <div style="padding:14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--expansion);">
+      <div style="font-size:0.92rem; color:var(--expansion); font-weight:600; margin-bottom:6px;">GDP Growth Outlook</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55;">Both Manufacturing and Services are in expansion territory simultaneously for the first time since early 2023. Services (68% of GDP) surging to 56.1 with strong Business Activity (59.9) and New Orders (58.6) signals accelerating GDP growth. Manufacturing recovery from a prolonged contraction (Mar&ndash;Dec 2025) adds breadth. Composite picture suggests Q1 2026 GDP tracking above 3%.</div>
+    </div>
+    <div style="padding:14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--accent-blue);">
+      <div style="font-size:0.92rem; color:var(--accent-blue); font-weight:600; margin-bottom:6px;">Equity Markets</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55;">The broadening expansion is bullish for equities. Services strength favors Consumer Discretionary, Health Care, IT, and Financials. Manufacturing recovery supports Industrials and Materials, but Employment contraction (48.8) warns labor-intensive sectors may lag. 14 of 18 services sectors in growth signals broad earnings support. AI/data center capex cycle is a dominant cross-sector theme.</div>
+    </div>
+    <div style="padding:14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--accent-orange);">
+      <div style="font-size:0.92rem; color:var(--accent-orange); font-weight:600; margin-bottom:6px;">Inflation & Fed Policy</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55;">Mixed signals complicate the Fed outlook. Manufacturing Prices surged to 70.5 (+11.5 pts) driven by tariffs on imported materials &mdash; the highest since mid-2022. But Services Prices decelerated to 63.0 from 66.6, the largest single-month decline. Net effect: goods-side cost-push inflation rising while services disinflation provides some offset. Likely keeps the Fed on hold through mid-2026.</div>
+    </div>
+    <div style="padding:14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--accent-cyan);">
+      <div style="font-size:0.92rem; color:var(--accent-cyan); font-weight:600; margin-bottom:6px;">Fixed Income & Credit</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55;">Synchronized expansion and tariff-driven cost pressures are bearish for duration. The long end of the Treasury curve faces upward pressure from growth acceleration and sticky inflation expectations. Investment-grade credit benefits from improving fundamentals, but high-yield spreads in manufacturing-heavy sectors warrant caution given employment weakness and margin compression from surging input costs.</div>
+    </div>
+    <div style="padding:14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--accent-purple);">
+      <div style="font-size:0.92rem; color:var(--accent-purple); font-weight:600; margin-bottom:6px;">Employment & Consumer</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55;">Services Employment improved to 51.8 (highest since Jun 2024), while Manufacturing Employment remains in contraction at 48.8 but trending higher. The services labor market recovery supports consumer spending, the largest GDP component. Order Backlog surge (+11.9 pts to 55.9) suggests hiring demand will strengthen in coming months as firms work through backlogs.</div>
+    </div>
+    <div style="padding:14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--accent-yellow);">
+      <div style="font-size:0.92rem; color:var(--accent-yellow); font-weight:600; margin-bottom:6px;">Trade & Supply Chains</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55;">Services Exports surged to 57.2 from 45.0 &mdash; a dramatic recovery. Manufacturing Supplier Deliveries slowing (55.1) reflects tariff-driven supply disruptions, particularly in semiconductors and raw materials. Companies are front-loading orders and building safety stock, which temporarily inflates New Orders readings. Monitor closely for whether demand normalizes once tariff stockpiling fades.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">PMI & NMI Historical Trend (24 Months)</div>
+  <div class="chart-container tall">
+    <canvas id="dualPmiChart"></canvas>
+  </div>
+</div>
+
+<!-- ====================== MANUFACTURING SECTION ====================== -->
+<div id="manufacturing" class="section-header">
+  <h2>ISM Manufacturing PMI</h2>
+  <span class="section-tag tag-mfg">MANUFACTURING</span>
+</div>
+
+<!-- Tab Navigation for Mfg -->
+<div class="tab-nav" id="mfgTabs">
+  <button class="tab-btn active" onclick="showMfgTab('overview')">Executive Summary</button>
+  <button class="tab-btn" onclick="showMfgTab('heatmap')">Heat Map</button>
+  <button class="tab-btn" onclick="showMfgTab('components')">Components</button>
+  <button class="tab-btn" onclick="showMfgTab('sectors')">Sectors</button>
+  <button class="tab-btn" onclick="showMfgTab('comments')">Industry Comments</button>
+</div>
+
+<!-- Mfg Overview -->
+<div id="mfg-overview" class="mfg-tab">
+  <div class="kpi-grid">
+    <div class="kpi-card expansion">
+      <div class="kpi-label">PMI Headline</div>
+      <div class="kpi-value expansion">52.4</div>
+      <div class="kpi-change down">&#9660; -0.2 from Jan</div>
+      <div class="kpi-trend">Expansion &middot; Moderating</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">New Orders</div>
+      <div class="kpi-value expansion">55.8</div>
+      <div class="kpi-change down">&#9660; -1.3 from Jan</div>
+      <div class="kpi-trend">Expansion &middot; Moderating</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">Production</div>
+      <div class="kpi-value expansion">53.5</div>
+      <div class="kpi-change down">&#9660; -2.4 from Jan</div>
+      <div class="kpi-trend">Expansion &middot; Moderating</div>
+    </div>
+    <div class="kpi-card contraction">
+      <div class="kpi-label">Employment</div>
+      <div class="kpi-value contraction">48.8</div>
+      <div class="kpi-change up">&#9650; +0.7 from Jan</div>
+      <div class="kpi-trend">Contraction &middot; Improving</div>
+    </div>
+    <div class="kpi-card neutral">
+      <div class="kpi-label">Supplier Deliveries</div>
+      <div class="kpi-value neutral">55.1</div>
+      <div class="kpi-change up">&#9650; +0.7 from Jan</div>
+      <div class="kpi-trend">Slowing Further</div>
+    </div>
+    <div class="kpi-card contraction">
+      <div class="kpi-label">Inventories</div>
+      <div class="kpi-value contraction">48.8</div>
+      <div class="kpi-change up">&#9650; +1.2 from Jan</div>
+      <div class="kpi-trend">Destocking &middot; Improving</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">Prices Paid</div>
+      <div class="kpi-value" style="color: var(--accent-orange);">70.5</div>
+      <div class="kpi-change up">&#9650; +11.5 from Jan</div>
+      <div class="kpi-trend" style="color:var(--accent-red);">&#9888; Surging &mdash; Inflation Risk</div>
+    </div>
+  </div>
+
+  <!-- Key Observations - Research Note Style -->
+  <div style="margin-top:24px;">
+    <div style="font-family:'DM Sans',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:6px;">Key Observations &amp; Analysis</div>
+    <div style="height:2px; background:linear-gradient(90deg, var(--accent-blue), transparent); margin-bottom:20px; border-radius:2px;"></div>
+
+    <!-- Big Picture Banner -->
+    <div style="background:linear-gradient(135deg, rgba(74,158,255,0.12), rgba(34,211,238,0.08)); border:1px solid rgba(74,158,255,0.25); border-radius:12px; padding:22px 24px; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <div style="width:36px; height:36px; border-radius:8px; background:rgba(74,158,255,0.2); display:flex; align-items:center; justify-content:center; font-size:1.1rem;">&#128200;</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:700; color:var(--text-primary);">Manufacturing Recovery Is Real, But Fragile</div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-primary); line-height:1.65;">The ISM Manufacturing PMI printed 52.4 in February 2026, marking the second consecutive month above 50 after a prolonged contraction that lasted from March through December 2025 (10 straight months below 50). This is the first back-to-back expansion since October 2022. The recovery is being driven by a surge in new orders (55.8) and production (53.5), suggesting genuine demand improvement rather than just inventory noise. However, this recovery comes with a major asterisk: prices are surging (70.5) due to tariff impacts, employment is still contracting (48.8), and supplier delivery times are lengthening (55.1). The data paints a picture of an economy where demand is coming back, but supply chains are under stress and manufacturers are not yet confident enough to hire aggressively.</div>
+    </div>
+
+    <!-- Insight 1 -->
+    <div style="display:flex; gap:20px; margin-bottom:20px; align-items:flex-start;">
+      <div style="flex-shrink:0; width:80px; text-align:center; padding:14px 0;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:700; color:var(--expansion);">55.8</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--expansion); font-weight:600;">New Orders</div>
+      </div>
+      <div style="flex:1; border-top:1px solid var(--border-color); padding-top:14px;">
+        <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">New Orders Signal Sustained Expansion Ahead</div>
+        <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">New Orders at 55.8 is the most important leading indicator in the PMI suite. It tells you where demand is headed before it shows up in production or revenue. After spending most of 2024&ndash;2025 below 50, New Orders have now been above 50 for two months running (57.1 in Jan, 55.8 in Feb). The 3-month average has risen to 53.5 from a 6-month average of 51.0, confirming a genuine trend shift rather than a one-month blip. This means manufacturers are receiving more orders than they can immediately fill, which should translate into higher production and eventually more hiring over the next 2&ndash;3 months. The slight moderation from January (-1.3 pts) is normal after a sharp initial surge and does not signal a reversal.</div>
+      </div>
+    </div>
+
+    <!-- Insight 2 -->
+    <div style="display:flex; gap:20px; margin-bottom:20px; align-items:flex-start;">
+      <div style="flex-shrink:0; width:80px; text-align:center; padding:14px 0;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:700; color:var(--expansion);">53.5</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--accent-cyan); font-weight:600;">Production</div>
+      </div>
+      <div style="flex:1; border-top:1px solid var(--border-color); padding-top:14px;">
+        <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Production Ramping Up &mdash; Confirms Order Strength</div>
+        <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">Production at 53.5 confirms that the new orders are being converted into actual output. After bottoming at 44.3 in April 2025, production has recovered steadily and is now firmly in expansion territory for the second straight month. When you see both New Orders and Production above 50 simultaneously, it validates that the expansion is real &mdash; factories are not just booking orders but actually running lines. The 3-month average of 53.5 versus the 6-month average of 51.8 shows accelerating momentum. This is the kind of setup that typically precedes GDP revisions upward, as manufacturing output feeds directly into the industrial production component of GDP.</div>
+      </div>
+    </div>
+
+    <!-- Insight 3 -->
+    <div style="display:flex; gap:20px; margin-bottom:20px; align-items:flex-start;">
+      <div style="flex-shrink:0; width:80px; text-align:center; padding:14px 0;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:700; color:var(--contraction);">48.8</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--contraction); font-weight:600;">Employment</div>
+      </div>
+      <div style="flex:1; border-top:1px solid var(--border-color); padding-top:14px;">
+        <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Employment: The Lagging Piece &mdash; But Turning</div>
+        <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">Employment at 48.8 remains below 50, meaning manufacturers are still shedding jobs on net. But context matters: this is improving from a cycle low of 43.4 in July 2024, and the trajectory is clearly upward (3-month avg 47.3, up from 6-month avg 46.2). Employment is a leading indicator because manufacturers hire when they believe the order pipeline is sustainable. The fact that hiring hasn't caught up to order strength yet tells you companies are cautious &mdash; they're running overtime and using temp labor before committing to permanent headcount. Historically, when New Orders sustain above 55 for 2&ndash;3 months, Employment follows above 50 within 1&ndash;2 quarters. Watch for a cross above 50 by Q2 2026 as a confirmation that the recovery has legs.</div>
+      </div>
+    </div>
+
+    <!-- Insight 4 -->
+    <div style="display:flex; gap:20px; margin-bottom:20px; align-items:flex-start;">
+      <div style="flex-shrink:0; width:80px; text-align:center; padding:14px 0;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:700; color:var(--contraction);">38.8</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--accent-purple); font-weight:600;">Cust. Inv.</div>
+      </div>
+      <div style="flex:1; border-top:1px solid var(--border-color); padding-top:14px;">
+        <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Inventories: Destocking Nearing End &mdash; Restocking Cycle Ahead</div>
+        <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">Inventories at 48.8 (below 50 = destocking) tells you manufacturers have been running down stockpiles for months. But Customer Inventories at 38.8 is the real story &mdash; this is extremely low and one of the lowest readings in years. When your customers' shelves are this bare and new orders are surging, it creates the conditions for a powerful restocking cycle. Manufacturers will need to rebuild both their own inventories and replenish their customers' supply. This restocking dynamic can add 1&ndash;2 percentage points to GDP growth and tends to sustain manufacturing expansion for multiple quarters. It's one of the most bullish signals in the current data set.</div>
+      </div>
+    </div>
+
+    <!-- Insight 5 -->
+    <div style="display:flex; gap:20px; margin-bottom:20px; align-items:flex-start;">
+      <div style="flex-shrink:0; width:80px; text-align:center; padding:14px 0;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:700; color:var(--accent-orange);">70.5</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--accent-orange); font-weight:600;">Prices</div>
+      </div>
+      <div style="flex:1; border-top:1px solid var(--border-color); padding-top:14px;">
+        <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Prices Surging to 70.5 &mdash; Tariff-Driven Inflation Risk</div>
+        <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">Prices Paid spiked +11.5 points in a single month to 70.5, the highest since mid-2022. This is a flashing warning sign for inflation. The surge is overwhelmingly tariff-driven: Section 232 tariffs on steel and aluminum have made domestically produced commodities among the most expensive in the world. Manufacturers report that raw materials like steel, wire, and semiconductors must now be sourced domestically at significantly higher costs. When Prices Paid is above 60, it historically correlates with PPI acceleration, and above 70 it begins feeding into CPI. This is the single biggest risk to the recovery &mdash; if cost pressures squeeze margins too hard, manufacturers may slow hiring and investment even as demand improves. For the Fed, this complicates any rate cut narrative and likely keeps policy on hold.</div>
+      </div>
+    </div>
+
+    <!-- Insight 6 -->
+    <div style="display:flex; gap:20px; align-items:flex-start;">
+      <div style="flex-shrink:0; width:80px; text-align:center; padding:14px 0;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:700; color:var(--neutral-zone);">55.1</div>
+        <div style="font-size:0.62rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--neutral-zone); font-weight:600;">Deliveries</div>
+      </div>
+      <div style="flex:1; border-top:1px solid var(--border-color); padding-top:14px;">
+        <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Supplier Deliveries Slowing &mdash; Bottleneck Watch</div>
+        <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">Supplier Deliveries at 55.1 means deliveries are slowing (above 50 = longer wait times). This has risen for four consecutive months from 49.3 in September. Slowing deliveries can mean two things: either demand is outstripping supply capacity (bullish for growth), or supply disruptions are creating bottlenecks (bearish for margins). In this case, it's both. Tariff-driven sourcing shifts and semiconductor shortages are creating genuine bottlenecks, while the demand recovery is straining capacity. This is a classic late-recovery dynamic where the expansion is self-reinforcing but also self-limiting &mdash; if deliveries keep slowing toward 60+, it signals capacity constraints that could choke off growth.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mfg Heat Map -->
+<div id="mfg-heatmap" class="mfg-tab" style="display:none;">
+  <div class="card">
+    <div class="card-title">Manufacturing Sub-Index Heat Map &mdash; Last 12 Months</div>
+    <div class="heat-map-wrapper">
+      <table class="heat-map" id="mfgHeatMapTable"></table>
+    </div>
+  </div>
+</div>
+
+<!-- Mfg Components -->
+<div id="mfg-components" class="mfg-tab" style="display:none;">
+
+  <!-- Section Intro -->
+  <div class="card" style="margin-bottom:20px; padding:18px 20px;">
+    <div style="font-size:0.92rem; color:var(--accent-blue); font-weight:600; margin-bottom:6px;">Understanding PMI Components as Leading Indicators</div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.6;">The ISM Manufacturing PMI is composed of sub-indices that act as leading indicators for the broader economy. When these components move above or below 50, they signal where manufacturing &mdash; and by extension GDP, corporate earnings, and employment &mdash; is headed in the coming months. New Orders leads Production by 1&ndash;2 months. Production leads Employment by 1&ndash;2 months. Inventories signal where the business cycle is in the destocking/restocking process. Together, they tell a story about the direction and sustainability of economic growth before it shows up in official GDP data.</div>
+  </div>
+
+  <!-- New Orders -->
+  <div class="card">
+    <div class="card-title">New Orders <span style="color:var(--expansion); font-size:0.7rem;">&#9679; LEADING INDICATOR</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> The volume of new orders placed with manufacturers. This is the single most important leading indicator in the PMI suite because orders must be placed before anything is produced, shipped, or paid for.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--expansion);">55.8</span></strong> &mdash; New Orders surged to 57.1 in January and held strong at 55.8 in February, the first back-to-back readings above 55 since early 2022. The 3-month average (53.5) is now decisively above the 6-month average (51.0), confirming a genuine trend shift. After spending 15 of the prior 18 months below 50, this breakout signals that demand is returning to manufacturing in a meaningful way. Companies are reporting increased RFPs and new contracts, particularly in electronics, food &amp; beverage, and defense-related industries.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> Sustained New Orders above 55 historically leads to Production acceleration within 1&ndash;2 months and Employment recovery within 1&ndash;2 quarters. It also signals rising industrial production and positive GDP contributions from manufacturing. Watch for whether orders hold above 55 or begin to normalize &mdash; some of the current strength may reflect tariff front-loading as companies lock in prices ahead of additional tariff rounds.
+    </div>
+    <div class="chart-container"><canvas id="mfgNewOrdersChart"></canvas></div>
+  </div>
+
+  <!-- Production -->
+  <div class="card">
+    <div class="card-title">Production <span style="color:var(--expansion); font-size:0.7rem;">&#9679; LEADING INDICATOR</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> The rate of output at manufacturing facilities. Production follows New Orders and leads Employment &mdash; when factories ramp up output, they first use existing capacity and overtime before hiring new workers.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--expansion);">53.5</span></strong> &mdash; Production recovered sharply from a cycle low of 44.3 in April 2025, hitting 55.9 in January before moderating to 53.5 in February. The moderation is partly seasonal and partly reflects supply chain constraints (Supplier Deliveries slowing to 55.1). What matters most is that Production is tracking New Orders higher &mdash; when both are above 50 simultaneously, it validates that the expansion is real. Manufacturers are converting orders into output, not just booking business they can't fulfill.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> Rising Production feeds directly into Industrial Production (a key GDP input) and signals improving capacity utilization. As production sustains above 50, manufacturers will exhaust spare capacity and begin facing hire-or-lose-orders decisions, which is the catalyst for Employment to follow above 50. The gap between New Orders (55.8) and Production (53.5) also suggests more room for output to expand.
+    </div>
+    <div class="chart-container"><canvas id="mfgProductionChart"></canvas></div>
+  </div>
+
+  <!-- Employment -->
+  <div class="card">
+    <div class="card-title">Employment <span style="color:var(--contraction); font-size:0.7rem;">&#9679; LEADING INDICATOR</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> Whether manufacturers are adding or reducing headcount. Employment is a leading indicator for the broader labor market and consumer spending &mdash; manufacturing hiring decisions ripple through local economies and supply chains.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--contraction);">48.8</span></strong> &mdash; Still below 50, meaning the sector is shedding jobs on net. But the trajectory is clearly improving: up from a devastating cycle low of 43.4 in July 2024, and the 3-month average (47.3) is above the 6-month average (46.2). Manufacturers are cautious &mdash; they're working existing employees harder (overtime, temp labor) rather than committing to permanent hires. Industry comments confirm this: Food &amp; Beverage reports being "inundated with applicants" for the first time in five years, while other sectors report slow, deliberate hiring plans.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> Historically, when New Orders sustain above 55 for 2&ndash;3 consecutive months, Employment crosses above 50 within 1&ndash;2 quarters. If the current order trend holds, expect Employment to reach 50+ by Q2&ndash;Q3 2026. This would be a powerful positive signal for the labor market, consumer confidence, and the consumer spending component of GDP (68%). Until then, the below-50 reading acts as a drag on the overall recovery narrative.
+    </div>
+    <div class="chart-container"><canvas id="mfgEmploymentChart"></canvas></div>
+  </div>
+
+  <!-- Inventories -->
+  <div class="card">
+    <div class="card-title">Inventories <span style="color:var(--expansion); font-size:0.7rem;">&#9679; LEADING INDICATOR</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> Whether manufacturers are building or drawing down their own stockpiles. Inventories are a leading indicator for the business cycle &mdash; the shift from destocking to restocking is one of the most powerful GDP accelerators.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--contraction);">48.8</span> (Own Inventories) / <span style="color:var(--contraction);">38.8</span> (Customer Inventories)</strong> &mdash; Own Inventories at 48.8 means manufacturers are still running down stockpiles, but the pace is slowing (up from 42.6 in October). Customer Inventories at 38.8 is the critical number here &mdash; it's extremely low and means your customers' shelves are nearly bare. When you combine surging New Orders (55.8) with depleted Customer Inventories (38.8), you get the preconditions for a restocking cycle: customers need to replenish their stocks, manufacturers need to rebuild their own, and this creates a multiplier effect on production and ordering.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> The restocking cycle is one of the most reliable GDP boosters in economics. It can add 1&ndash;2 percentage points to GDP growth and typically sustains manufacturing expansion for 2&ndash;4 quarters. Watch for Own Inventories to cross above 50 (signaling the restocking has begun) &mdash; this would confirm the expansion is self-sustaining and has multiple quarters of runway.
+    </div>
+    <div class="chart-grid" style="margin-bottom:0;">
+      <div style="position:relative;"><div class="chart-container"><canvas id="mfgInventoriesChart"></canvas></div><div style="text-align:center; font-size:0.68rem; color:var(--text-muted); margin-top:4px;">Own Inventories</div></div>
+      <div style="position:relative;"><div class="chart-container"><canvas id="mfgCustInvChart"></canvas></div><div style="text-align:center; font-size:0.68rem; color:var(--text-muted); margin-top:4px;">Customer Inventories</div></div>
+    </div>
+  </div>
+
+  <!-- Order Backlog + Prices -->
+  <div class="card" style="margin-top:20px; padding:18px 20px;">
+    <div style="font-size:0.92rem; color:var(--accent-orange); font-weight:600; margin-bottom:6px;">Order Backlog &amp; Prices: Demand vs. Cost Pressure</div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.6;">Order Backlog and Prices Paid together tell you whether the expansion is healthy or overheating. Rising backlogs with moderate prices = healthy demand. Rising backlogs with surging prices = demand is outstripping supply capacity, creating inflation risk and margin compression.</div>
+  </div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="card-title">Order Backlog</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+        <strong style="color:var(--text-primary);">Current: <span style="color:var(--expansion);">56.6</span></strong> &mdash; Surged from 39.6 in December to 51.6 in January and 56.6 in February. This is the highest backlog reading since the post-COVID restocking boom. Rising backlogs confirm that demand is exceeding current production capacity, which supports the case for sustained output growth and eventually more hiring. However, combined with slowing Supplier Deliveries, it also signals that supply chains are struggling to keep up.
+      </div>
+      <div class="chart-container"><canvas id="mfgBacklogChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Prices Paid</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+        <strong style="color:var(--text-primary);">Current: <span style="color:var(--accent-red);">70.5</span></strong> &mdash; The biggest single-month jump (+11.5 pts) in years. Tariffs on steel, aluminum, and imported components are the primary driver. As one Transportation Equipment manufacturer put it, domestically produced steel and aluminum are now the most expensive in the world. When Prices Paid sustains above 65, it historically feeds into PPI and eventually CPI within 3&ndash;6 months. This is the biggest risk to the recovery and the main reason the Fed will likely stay on hold.
+      </div>
+      <div class="chart-container"><canvas id="mfgPricesChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Supply Chain + Trade -->
+  <div class="card" style="margin-top:20px; padding:18px 20px;">
+    <div style="font-size:0.92rem; color:var(--accent-cyan); font-weight:600; margin-bottom:6px;">Supply Chain &amp; Trade</div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.6;">These indicators track delivery times, export/import activity, and the overall health of global supply chains. They're particularly important right now because tariff policy is reshaping trade flows and creating new bottlenecks.</div>
+  </div>
+  <!-- Supplier Deliveries - Full Width -->
+  <div style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Supplier Deliveries</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+        <strong style="color:var(--text-primary);">Current: <span style="color:var(--neutral-zone);">55.1</span></strong> (above 50 = slower deliveries) &mdash; Four consecutive months of slowing. Semiconductor shortages and tariff-driven sourcing changes are the main culprits. When deliveries slow while orders rise, it means the supply side can't keep pace with demand, which reinforces both the inflation and the sustained-demand narratives.
+      </div>
+      <div class="chart-container"><canvas id="mfgDeliveriesChart"></canvas></div>
+    </div>
+  </div>
+  <!-- Exports & Imports - Side by Side -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="card-title">Exports</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+        <strong style="color:var(--text-primary);">Current: <span style="color:var(--expansion);">50.3</span></strong> &mdash; Just barely in expansion after spending most of 2025 below 50 (bottoming at 40.1 in May). The recovery is fragile and heavily dependent on trade policy. Tariff uncertainty makes export contracts risky for both parties. Any escalation could push this back below 50 quickly.
+      </div>
+      <div class="chart-container"><canvas id="mfgExportsChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Imports</div>
+      <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+        <strong style="color:var(--text-primary);">Current: <span style="color:var(--expansion);">54.9</span></strong> &mdash; Imports surging to 54.9 from 44.6 in December is notable. This likely reflects tariff front-loading: companies are rushing to import materials before additional tariff rounds take effect. This artificially inflates near-term activity and could lead to a pullback once stockpiling is complete. Watch for a sharp reversal in 2&ndash;3 months as a sign the front-loading effect is fading.
+      </div>
+      <div class="chart-container"><canvas id="mfgImportsChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mfg Sectors -->
+<div id="mfg-sectors" class="mfg-tab" style="display:none;">
+  <div class="card">
+    <div class="card-title">Manufacturing Sector Activity (February 2026)</div>
+    <div id="mfgSectorBars"></div>
+  </div>
+</div>
+
+<!-- Mfg Industry Comments -->
+<div id="mfg-comments" class="mfg-tab" style="display:none;">
+  <div class="card">
+    <div class="card-title">Manufacturing Industry Comments &mdash; February 2026</div>
+    <div id="mfgIndustryComments"></div>
+  </div>
+</div>
+
+<!-- ====================== SERVICES SECTION ====================== -->
+<div id="services" class="section-header">
+  <h2>ISM Services (Non-Manufacturing) NMI</h2>
+  <span class="section-tag tag-svc">SERVICES</span>
+</div>
+
+<div class="tab-nav" id="svcTabs">
+  <button class="tab-btn active" onclick="showSvcTab('overview')">Executive Summary</button>
+  <button class="tab-btn" onclick="showSvcTab('heatmap')">Heat Map</button>
+  <button class="tab-btn" onclick="showSvcTab('components')">Components</button>
+  <button class="tab-btn" onclick="showSvcTab('sectors')">Sector Analysis</button>
+  <button class="tab-btn" onclick="showSvcTab('comments')">Industry Comments</button>
+</div>
+
+<!-- Svc Overview -->
+<div id="svc-overview" class="svc-tab">
+  <!-- Row 1: NMI, Business Activity, New Orders, Employment -->
+  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px;">
+    <div class="kpi-card expansion">
+      <div class="kpi-label">NMI Headline</div>
+      <div class="kpi-value expansion">56.1</div>
+      <div class="kpi-change up">&#9650; +5.9 from Jan</div>
+      <div class="kpi-trend">Highest Since Feb 2023</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">Business Activity</div>
+      <div class="kpi-value expansion">59.9</div>
+      <div class="kpi-change up">&#9650; +2.5 from Jan</div>
+      <div class="kpi-trend">Accelerating</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">New Orders</div>
+      <div class="kpi-value expansion">58.6</div>
+      <div class="kpi-change up">&#9650; +5.5 from Jan</div>
+      <div class="kpi-trend">Accelerating</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">Employment</div>
+      <div class="kpi-value expansion">51.8</div>
+      <div class="kpi-change up">&#9650; +1.5 from Jan</div>
+      <div class="kpi-trend">Improving</div>
+    </div>
+  </div>
+  <!-- Row 2: Inventories, Order Backlog, Prices Paid, Exports -->
+  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-top:16px;">
+    <div class="kpi-card expansion">
+      <div class="kpi-label">Inventories</div>
+      <div class="kpi-value expansion">55.0</div>
+      <div class="kpi-change up">&#9650; +5.4 from Jan</div>
+      <div class="kpi-trend">Sharply Rebounding</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">Order Backlog</div>
+      <div class="kpi-value expansion">55.9</div>
+      <div class="kpi-change up">&#9650; +11.9 from Jan</div>
+      <div class="kpi-trend">Sharply Rebounding</div>
+    </div>
+    <div class="kpi-card neutral">
+      <div class="kpi-label">Prices Paid</div>
+      <div class="kpi-value" style="color: var(--accent-yellow);">63.0</div>
+      <div class="kpi-change down">&#9660; -3.6 from Jan</div>
+      <div class="kpi-trend" style="color:var(--expansion);">Decelerating &mdash; Positive Signal</div>
+    </div>
+    <div class="kpi-card expansion">
+      <div class="kpi-label">Exports</div>
+      <div class="kpi-value expansion">57.2</div>
+      <div class="kpi-change up">&#9650; +12.2 from Jan</div>
+      <div class="kpi-trend">Sharply Rebounding</div>
+    </div>
+  </div>
+
+  <!-- Key Observations - Top-Accent Card Style -->
+  <div style="margin-top:24px;">
+    <div style="font-family:'DM Sans',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:6px;">Key Observations &amp; Analysis</div>
+    <div style="height:2px; background:linear-gradient(90deg, var(--accent-purple), transparent); margin-bottom:20px; border-radius:2px;"></div>
+
+    <!-- Big Picture Banner -->
+    <div style="background:linear-gradient(135deg, rgba(168,85,247,0.12), rgba(34,211,238,0.06)); border:1px solid rgba(168,85,247,0.25); border-radius:12px; padding:22px 24px; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <div style="width:36px; height:36px; border-radius:8px; background:rgba(168,85,247,0.2); display:flex; align-items:center; justify-content:center; font-size:1.1rem;">&#128640;</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:700; color:var(--text-primary);">Services Economy Is Accelerating Broadly</div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-primary); line-height:1.65;">The ISM Services NMI surged to 56.1 in February 2026, the highest reading since February 2023 and a +5.9 point jump from January's 50.2. This is a dramatic acceleration, not a gradual recovery. The breadth is equally impressive: 14 of 18 services sectors are now in growth, up from 11 in January. Services represent approximately 68% of U.S. GDP, so when this sector accelerates, it moves the needle on the entire economy. The surge is being driven by a powerful combination of strong demand (New Orders 58.6, Business Activity 59.9), rebuilding backlogs (Order Backlog +11.9 pts to 55.9), and surging services exports (57.2). Crucially, services inflation is actually decelerating (Prices Paid fell to 63.0 from 66.6), which is the opposite of what's happening in manufacturing. This gives the economy growth without adding to the Fed's inflation problem.</div>
+    </div>
+
+    <!-- Insights in top-accent card style -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+
+      <div style="background:var(--bg-card); border-radius:10px; overflow:hidden; border:1px solid var(--border-color);">
+        <div style="height:4px; background:linear-gradient(90deg, var(--expansion), var(--accent-cyan));"></div>
+        <div style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+            <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Business Activity Near 60</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; color:var(--expansion);">59.9</div>
+          </div>
+          <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">Business Activity at 59.9 is the services equivalent of Production in manufacturing &mdash; it measures actual output. Readings near 60 historically correlate with GDP growth above 3%. The acceleration from 57.4 to 59.9 shows the expansion is gaining speed, not plateauing. This is being driven by AI/data center investment (Construction, IT, Utilities all in strong expansion), healthcare demand, and consumer-facing services. When Business Activity sustains above 55, it feeds directly into the PCE (Personal Consumption Expenditures) component of GDP, which the Fed watches closely.</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-card); border-radius:10px; overflow:hidden; border:1px solid var(--border-color);">
+        <div style="height:4px; background:linear-gradient(90deg, var(--accent-purple), var(--accent-blue));"></div>
+        <div style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+            <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Demand Pipeline Is Deep</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; color:var(--accent-purple);">58.6 <span style="font-size:0.7rem; color:var(--text-muted);">NO</span></div>
+          </div>
+          <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">New Orders jumped +5.5 pts to 58.6, but the real standout is Order Backlog surging +11.9 pts to 55.9 from just 44.0 in January. When both are elevated simultaneously, it means not only is new demand strong, but companies are building a queue of work they haven't been able to deliver yet. This provides visibility into future Business Activity &mdash; even if new orders slow somewhat, the backlog provides a buffer that should keep output elevated for months. Services Exports at 57.2 (up from 45.0) confirms this is not just domestic demand; U.S. services are gaining share internationally.</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-card); border-radius:10px; overflow:hidden; border:1px solid var(--border-color);">
+        <div style="height:4px; background:linear-gradient(90deg, var(--expansion), var(--expansion));"></div>
+        <div style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+            <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Employment Crossing 50</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; color:var(--expansion);">51.8</div>
+          </div>
+          <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">Services Employment at 51.8 is now above 50 for two consecutive months (50.3 in Jan, 51.8 in Feb), the highest since June 2024. Unlike manufacturing where employers are still cautious, services firms are beginning to add headcount. This is critical because services employ roughly 80% of the private sector workforce. When services employers start hiring, it supports consumer confidence, wage growth, and spending &mdash; creating a positive feedback loop. The acceleration from 46.4 in July 2025 to 51.8 now represents a complete turnaround in less than 8 months.</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-card); border-radius:10px; overflow:hidden; border:1px solid var(--border-color);">
+        <div style="height:4px; background:linear-gradient(90deg, var(--accent-yellow), var(--expansion));"></div>
+        <div style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+            <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary);">Inflation Decelerating</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; color:var(--accent-yellow);">63.0 <span style="font-size:0.7rem; color:var(--expansion);">&#9660;</span></div>
+          </div>
+          <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.65;">While Manufacturing Prices are surging to 70.5 (tariff-driven), Services Prices Paid declined to 63.0 from 66.6 &mdash; the largest single-month drop in the current cycle. This is exactly what the Fed and the market want to see: services inflation decelerating while growth accelerates. Services inflation has been the stickier component of CPI, so any deceleration here is meaningful for the overall inflation outlook. If this trend continues, it strengthens the case for eventual rate cuts, even as manufacturing inflation remains elevated. The divergence between services (decelerating) and goods (surging) creates a complex but net-positive picture for the economy.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Svc Heat Map -->
+<div id="svc-heatmap" class="svc-tab" style="display:none;">
+  <div class="card">
+    <div class="card-title">NMI Sub-Index Heat Map &mdash; Last 12 Months</div>
+    <div class="heat-map-wrapper">
+      <table class="heat-map" id="svcHeatMapTable"></table>
+    </div>
+  </div>
+</div>
+
+<!-- Svc Components -->
+<div id="svc-components" class="svc-tab" style="display:none;">
+
+  <!-- Section Intro -->
+  <div class="card" style="margin-bottom:20px; padding:18px 20px;">
+    <div style="font-size:0.92rem; color:var(--accent-purple); font-weight:600; margin-bottom:6px;">Understanding NMI Components</div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.6;">The Services NMI components work similarly to manufacturing but measure the much larger services economy. Business Activity is the services equivalent of Production. New Orders, Employment, and Prices Paid are the key sub-indices that drive the GDP, labor market, and inflation narratives. Because services represent 68% of GDP and 80% of private employment, these readings have an outsized impact on the macro outlook.</div>
+  </div>
+
+  <!-- Business Activity -->
+  <div class="card">
+    <div class="card-title">Business Activity <span style="color:var(--expansion); font-size:0.7rem;">&#9679; OUTPUT MEASURE</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> The level of actual business output in the services sector &mdash; equivalent to Production in manufacturing. This is the broadest measure of whether the services economy is growing or contracting.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--expansion);">59.9</span></strong> &mdash; Near 60, which is extremely strong. This is the highest since March 2024 and represents a steady acceleration from the mid-2025 soft patch (49.9 in May, 50.0 in Sep). The key drivers are AI/data center related construction and IT investment, healthcare services demand, and broad consumer spending recovery. Construction firms report "pending surge in new capital investments in data centers, combined cycle power, and nuclear market sectors." When Business Activity sustains above 55, it's associated with above-trend GDP growth.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> Near-60 Business Activity signals Q1 2026 GDP is tracking strong. The backlog surge (55.9) provides additional runway, suggesting this isn't a one-month spike but has 2&ndash;3 quarters of sustainability. For equity investors, this supports earnings growth in consumer-facing and business services sectors.
+    </div>
+    <div class="chart-container"><canvas id="svcBAChart"></canvas></div>
+  </div>
+
+  <!-- New Orders -->
+  <div class="card">
+    <div class="card-title">New Orders <span style="color:var(--expansion); font-size:0.7rem;">&#9679; LEADING INDICATOR</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> The flow of new business coming into services firms. Like manufacturing, New Orders is the primary leading indicator &mdash; it tells you what Business Activity will look like in 1&ndash;2 months.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--expansion);">58.6</span></strong> &mdash; A +5.5 point surge from 53.1 in January. This is one of the strongest single-month jumps in recent history. The breadth is key: 14 of 18 sectors reporting growth means this isn't driven by a single industry but reflects broad-based demand. Mining, Information, Real Estate, and Agriculture are leading, while only Retail Trade, Arts &amp; Entertainment, and Transportation are contracting.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> New Orders at 58.6 combined with Order Backlog at 55.9 suggests services output will remain elevated through Q2 2026 at minimum. This level of demand typically leads to further Employment gains as firms struggle to meet demand with existing staff. For GDP, it supports continued strength in the consumer spending component.
+    </div>
+    <div class="chart-container"><canvas id="svcNOChart"></canvas></div>
+  </div>
+
+  <!-- Employment -->
+  <div class="card">
+    <div class="card-title">Employment <span style="color:var(--expansion); font-size:0.7rem;">&#9679; LABOR MARKET SIGNAL</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> Whether services firms are adding or reducing staff. Given that services employ roughly 80% of the private sector, this is arguably the single most important number in the NMI for the broader economy.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--expansion);">51.8</span></strong> &mdash; Now above 50 for two consecutive months, the highest since June 2024. The recovery from a low of 46.2 in March 2025 has been steady but not dramatic, which is actually a positive sign &mdash; it suggests measured, sustainable hiring rather than a hiring frenzy. With Business Activity near 60 and backlogs building, the pressure to add staff will intensify in coming months.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> Services Employment above 50 is bullish for non-farm payrolls, wage growth, and consumer spending. If this sustains above 52&ndash;53 for the next 2&ndash;3 months, it would signal a genuine labor market re-acceleration and strengthen the consumer spending pillar of GDP. Combined with Manufacturing Employment trending toward 50, the overall employment picture is improving on both sides of the economy.
+    </div>
+    <div class="chart-container"><canvas id="svcEmpChart"></canvas></div>
+  </div>
+
+  <!-- Prices Paid -->
+  <div class="card">
+    <div class="card-title">Prices Paid <span style="color:var(--accent-yellow); font-size:0.7rem;">&#9679; INFLATION SIGNAL</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> Input cost pressures on services firms. Because services account for the majority of core CPI, this reading feeds directly into the inflation narrative and Fed policy decisions.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--accent-yellow);">63.0</span></strong> &mdash; Down from 66.6 in January, a -3.6 point decline and the largest single-month drop in the current cycle. While 63.0 is still elevated (above the long-run average of ~58), the direction of travel is more important than the level. Services inflation had been stubbornly high for 12+ months, and this is the first clear sign of deceleration. Tariff impacts are less direct on services than manufacturing, which explains the divergence.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> If Services Prices continue declining toward 58&ndash;60, it would be a major catalyst for Treasury markets (bullish for duration) and strengthen the case for Fed rate cuts in H2 2026. The combination of accelerating growth with decelerating inflation is the textbook "Goldilocks" scenario that equity markets love. However, if tariff-driven goods inflation spills over into services through higher transportation and input costs, this deceleration could stall.
+    </div>
+    <div class="chart-container"><canvas id="svcPricesChart"></canvas></div>
+  </div>
+
+  <!-- Inventories -->
+  <div class="card">
+    <div class="card-title">Inventories <span style="color:var(--accent-purple); font-size:0.7rem;">&#9679; LEADING INDICATOR</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> Whether services firms are building or drawing down inventories. Rising inventories can signal either confidence in future demand (proactive stocking) or weakening sales (involuntary accumulation). Context from New Orders and Business Activity helps distinguish between the two.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--expansion);">56.4</span></strong> &mdash; A dramatic +11.3 point surge from 45.1 in January, the largest single-month swing in the dataset. This follows a volatile pattern &mdash; inventories swung from 54.2 in December down to 45.1 in January and now back to 56.4. The context matters: with New Orders at 58.6 and Business Activity at 59.9, this looks like intentional restocking to meet surging demand rather than involuntary accumulation. Firms in Finance &amp; Insurance, Wholesale Trade, and Professional Services are actively building stock to service growing order pipelines.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> Inventories rising alongside strong New Orders is a bullish signal &mdash; it means firms expect demand to persist and are investing to meet it. If New Orders were falling while inventories rose, it would be a recession warning. The current configuration supports continued GDP growth and suggests businesses see the demand acceleration as durable, not temporary. Watch for whether inventory builds outpace new orders in coming months, which would signal over-stocking risk.
+    </div>
+    <div class="chart-container"><canvas id="svcInventoriesChart"></canvas></div>
+  </div>
+
+  <!-- Supplier Deliveries -->
+  <div class="card">
+    <div class="card-title">Supplier Deliveries <span style="color:var(--accent-yellow); font-size:0.7rem;">&#9679; SUPPLY CHAIN SIGNAL</span></div>
+    <div style="font-size:0.9rem; color:var(--text-primary); line-height:1.55; margin-bottom:14px;">
+      <strong style="color:var(--text-primary);">What it measures:</strong> The speed at which suppliers deliver goods and services to firms. Above 50 means deliveries are slowing (suppliers can't keep up with demand), while below 50 means deliveries are speeding up (ample supply capacity). Unlike most sub-indices, higher readings here often signal supply constraints rather than economic strength.<br><br>
+      <strong style="color:var(--text-primary);">Current reading: <span style="color:var(--accent-yellow);">53.9</span></strong> &mdash; Deliveries have been gradually slowing since mid-2025, trending upward from 50.3 in April/August to 54.2 in January and 53.9 in February. This is consistent with the broader demand acceleration &mdash; when Business Activity is near 60 and New Orders are surging, suppliers naturally face more pressure. The slowing is moderate, not severe (the 2021 supply crisis saw readings above 70), but the trend is worth monitoring given tariff-related disruptions in manufacturing supply chains that can spill over into services.<br><br>
+      <strong style="color:var(--text-primary);">What it means going forward:</strong> Moderately slowing deliveries in a high-demand environment are normal and not yet concerning. However, if tariff impacts on goods and materials start constraining services firms (especially in Construction, Accommodation, and Health Care which depend on physical inputs), deliveries could slow further and become an inflation accelerant. For now, this reading confirms the demand-driven narrative without raising red flags. If deliveries push above 56&ndash;58, it would signal genuine bottlenecks forming.
+    </div>
+    <div class="chart-container"><canvas id="svcDeliveriesChart"></canvas></div>
+  </div>
+</div>
+
+<!-- Svc Sectors -->
+<div id="svc-sectors" class="svc-tab" style="display:none;">
+  <div class="card">
+    <div class="card-title">Services Sector Rankings (February 2026)</div>
+    <div id="svcSectorBars"></div>
+  </div>
+
+  <div class="section-header" style="margin-top:30px;">
+    <h2>GICS Sector Investment Positioning</h2>
+    <span class="section-tag tag-svc">PORTFOLIO</span>
+  </div>
+  <div class="trade-grid">
+    <div class="trade-card overweight">
+      <h4>Information Technology</h4>
+      <p>PMI strong, Business Activity surging, New Orders accelerating. AI/Data Center supercycle driving growth.</p>
+      <span class="trade-signal buy">STRONG OVERWEIGHT</span>
+    </div>
+    <div class="trade-card overweight">
+      <h4>Health Care</h4>
+      <p>PMI expanding, New Orders positive. Respiratory demand surge providing near-term tailwind.</p>
+      <span class="trade-signal buy">STRONG OVERWEIGHT</span>
+    </div>
+    <div class="trade-card overweight">
+      <h4>Consumer Discretionary</h4>
+      <p>PMI strong expansion, Business Activity positive, New Orders accelerating, Employment recovering.</p>
+      <span class="trade-signal buy">STRONG OVERWEIGHT</span>
+    </div>
+    <div class="trade-card overweight">
+      <h4>Industrials</h4>
+      <p>Broad expansion with strong New Orders. Construction capex in data centers and power generation driving growth.</p>
+      <span class="trade-signal buy">MODERATE OVERWEIGHT</span>
+    </div>
+    <div class="trade-card overweight">
+      <h4>Utilities</h4>
+      <p>Expanding across all sub-indices. Data center demand creating structural growth. Cold weather boosting revenues.</p>
+      <span class="trade-signal buy">MODERATE OVERWEIGHT</span>
+    </div>
+    <div class="trade-card overweight">
+      <h4>Financials</h4>
+      <p>Business healthy and consistent. New Orders strong. Stable environment supporting steady growth.</p>
+      <span class="trade-signal buy">MODERATE OVERWEIGHT</span>
+    </div>
+    <div class="trade-card underweight">
+      <h4>Retail Trade</h4>
+      <p>Weakest sector at -3.0. RAM shortages increasing IT costs. Despite solid holiday, structural headwinds persist.</p>
+      <span class="trade-signal sell">STRONG UNDERWEIGHT</span>
+    </div>
+    <div class="trade-card underweight">
+      <h4>Arts, Entertainment & Recreation</h4>
+      <p>Second weakest at -2.0. Significant contraction in activity and demand indicators.</p>
+      <span class="trade-signal sell">STRONG UNDERWEIGHT</span>
+    </div>
+    <div class="trade-card underweight">
+      <h4>Transportation & Warehousing</h4>
+      <p>Contracting at -1.0. Trucking capacity extremely tight with rates spiking 30-40%. Cost squeeze on margins.</p>
+      <span class="trade-signal sell">MODERATE UNDERWEIGHT</span>
+    </div>
+  </div>
+</div>
+
+<!-- Svc Comments -->
+<div id="svc-comments" class="svc-tab" style="display:none;">
+  <div class="card">
+    <div class="card-title">Select Industry Comments &mdash; February 2026</div>
+    <div id="industryComments"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="dashboard-footer">
+  <div style="margin-bottom:6px; font-weight:500; color:var(--text-primary);">ISM PMI Research Dashboard &mdash; Marlon Whittock</div>
+  <div>Data: Institute for Supply Management (ISM) | February 2026 Release</div>
+  <div style="margin-top:4px;">For informational purposes only. Not investment advice.</div>
+</div>
+
+</div><!-- end container -->
+
+<script>
+// ==================== DATA ====================
+const mfgPMI = {
+  labels: ['Mar 24','Apr 24','May 24','Jun 24','Jul 24','Aug 24','Sep 24','Oct 24','Nov 24','Dec 24','Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26'],
+  data: [50.3,49.2,48.7,48.5,46.8,47.2,47.2,46.5,48.4,49.2,50.9,50.3,49.0,48.7,48.5,49.0,48.0,48.7,49.1,48.7,48.2,47.9,52.6,52.4]
+};
+const svcNMI = {
+  labels: ['Mar 24','Apr 24','May 24','Jun 24','Jul 24','Aug 24','Sep 24','Oct 24','Nov 24','Dec 24','Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26'],
+  data: [51.4,49.4,53.8,48.8,51.4,51.5,54.9,56.0,52.1,54.0,52.8,53.5,50.8,51.6,49.9,50.8,50.1,52.0,50.0,52.4,52.6,53.8,53.8,56.1]
+};
+const mfgMonths12 = ['Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26'];
+const mfgNewOrders = [45.2,47.2,46.2,49.3,47.4,45.3,48.3,47.1,50.4,47.6,57.1,55.8];
+const mfgProduction = [52.2,44.3,50.8,48.5,45.9,46.0,49.9,48.6,46.8,51.5,55.9,53.5];
+const mfgEmployment = [44.7,46.5,46.6,49.3,43.4,46.0,49.0,44.4,48.1,45.3,48.1,48.8];
+const mfgPrices = [69.4,60.9,55.8,52.1,52.9,54.0,48.3,54.8,50.3,52.5,59.0,70.5];
+const mfgInventories = [53.4,50.8,46.7,49.2,48.9,49.4,47.7,45.8,48.9,45.2,47.6,48.8];
+const mfgDeliveries = [53.5,55.2,56.1,54.2,49.3,51.3,52.6,54.2,49.3,50.8,54.4,55.1];
+const mfgBacklog = [44.5,43.7,47.1,44.3,46.8,44.7,46.2,47.9,44.0,45.8,51.6,56.6];
+const mfgExports = [49.6,43.1,40.1,46.3,46.1,47.6,43.0,44.5,46.2,46.8,50.2,50.3];
+const mfgImports = [50.1,47.1,39.9,47.4,47.6,46.0,44.7,45.4,48.9,44.6,50.0,54.9];
+const mfgCustInv = [46.8,46.2,44.5,46.7,45.7,44.6,43.7,43.9,44.7,43.3,38.7,38.8];
+const svcBA = [55.9,53.7,50.0,54.2,52.6,55.0,49.9,54.3,54.5,55.2,57.4,59.9];
+const svcNO = [50.4,52.3,46.4,51.3,50.3,56.0,50.4,56.2,52.9,56.5,53.1,58.6];
+const svcEmp = [46.2,49.0,50.7,47.2,46.4,46.5,47.2,48.2,48.9,51.7,50.3,51.8];
+const svcPrices = [60.9,65.1,68.7,67.5,69.9,69.2,69.4,70.0,65.4,65.1,66.6,63.0];
+const svcInventories = [50.3,53.4,49.7,52.7,51.8,53.2,47.8,49.5,53.4,54.2,45.1,56.4];
+const svcDeliveries = [50.6,51.3,52.5,50.3,51.0,50.3,52.6,50.8,54.1,51.8,54.2,53.9];
+
+// Mfg Heat Map data (12 months, all sub-indices)
+const mfgHeatMapData = {
+  months: mfgMonths12,
+  indices: ['PMI','New Orders','Production','Employment','Deliveries','Inventories','Cust. Inv.','Prices','Backlog','Exports','Imports'],
+  data: [
+    [49.0,48.7,48.5,49.0,48.0,48.7,49.1,48.7,48.2,47.9,52.6,52.4],
+    [45.2,47.2,46.2,49.3,47.4,45.3,48.3,47.1,50.4,47.6,57.1,55.8],
+    [52.2,44.3,50.8,48.5,45.9,46.0,49.9,48.6,46.8,51.5,55.9,53.5],
+    [44.7,46.5,46.6,49.3,43.4,46.0,49.0,44.4,48.1,45.3,48.1,48.8],
+    [48.6,48.4,48.9,49.7,52.3,49.6,50.1,52.7,52.5,50.9,54.4,55.1],
+    [45.0,48.1,45.4,44.6,43.6,44.3,43.9,42.6,46.8,48.2,47.6,48.8],
+    [49.6,49.2,49.0,47.9,46.9,48.4,49.4,48.1,47.4,46.7,48.1,47.5],
+    [69.4,60.9,55.8,52.1,52.9,54.0,48.3,54.8,50.3,52.5,59.0,70.5],
+    [44.5,43.1,39.0,42.0,41.7,42.3,44.1,45.3,41.8,39.6,48.7,46.3],
+    [51.8,49.6,50.1,47.8,49.0,48.6,47.2,48.7,50.1,47.0,50.0,52.6],
+    [49.8,49.1,46.1,47.7,48.3,50.2,49.8,47.4,46.8,47.2,52.4,51.5]
+  ]
+};
+
+const svcHeatMapData = {
+  months: mfgMonths12,
+  indices: ['NMI','Business Activity','New Orders','Employment','Supplier Deliveries','Inventories','Prices','Order Backlog','New Export Orders','Imports','Inventory Sentiment'],
+  data: [
+    [50.8,51.6,49.9,50.8,50.1,52.0,50.0,52.4,52.6,53.8,53.8,56.1],
+    [55.9,53.7,50.0,54.2,52.6,55.0,49.9,54.3,54.5,55.2,57.4,59.9],
+    [50.4,52.3,46.4,51.3,50.3,56.0,50.4,56.2,52.9,56.5,53.1,58.6],
+    [46.2,49.0,50.7,47.2,46.4,46.5,47.2,48.2,48.9,51.7,50.3,51.8],
+    [50.6,51.3,52.5,50.3,51.0,50.3,52.6,50.8,54.1,51.8,54.2,53.9],
+    [50.3,53.4,49.7,52.7,51.8,53.2,47.8,49.5,53.4,54.2,45.1,56.4],
+    [60.9,65.1,68.7,67.5,69.9,69.2,69.4,70.0,65.4,65.1,66.6,63.0],
+    [47.4,48.0,43.4,42.4,44.3,40.4,47.3,40.8,49.1,42.6,44.0,55.9],
+    [45.8,48.6,48.5,51.1,47.9,47.3,46.5,47.8,48.7,54.2,45.0,57.2],
+    [52.6,56.1,48.2,51.7,45.9,54.6,49.2,43.7,48.9,50.3,48.2,51.8],
+    [56.6,56.1,62.9,57.1,53.2,55.5,55.7,55.5,54.8,54.1,54.3,55.3]
+  ]
+};
+
+// Services Sector Rankings
+const svcSectors = [
+  {name:'Mining', score:14}, {name:'Information', score:13}, {name:'Real Estate', score:12},
+  {name:'Agriculture & Forestry', score:11}, {name:'Accommodation & Food', score:10},
+  {name:'Wholesale Trade', score:9}, {name:'Finance & Insurance', score:8},
+  {name:'Utilities', score:7}, {name:'Professional Services', score:6},
+  {name:'Construction', score:5}, {name:'Management & Support', score:4},
+  {name:'Public Administration', score:3}, {name:'Health Care', score:2},
+  {name:'Educational Services', score:1}, {name:'Other Services', score:0},
+  {name:'Transportation & Warehousing', score:-1}, {name:'Arts & Entertainment', score:-2},
+  {name:'Retail Trade', score:-3}
+];
+
+// Mfg Sectors (based on extraction - key manufacturing sectors)
+const mfgSectors = [
+  {name:'Computer & Electronic Products', score:8}, {name:'Petroleum & Coal Products', score:7},
+  {name:'Chemical Products', score:6}, {name:'Food, Beverage & Tobacco', score:5},
+  {name:'Fabricated Metal Products', score:4}, {name:'Electrical Equipment', score:3},
+  {name:'Miscellaneous Manufacturing', score:2}, {name:'Nonmetallic Mineral Products', score:1},
+  {name:'Machinery', score:0}, {name:'Paper Products', score:-1},
+  {name:'Primary Metals', score:-2}, {name:'Plastics & Rubber', score:-3},
+  {name:'Transportation Equipment', score:-4}, {name:'Textile Mills', score:-5},
+  {name:'Wood Products', score:-6}, {name:'Furniture', score:-7},
+  {name:'Printing & Related', score:-8}, {name:'Apparel & Leather', score:-9}
+];
+
+// Industry Comments
+const industryComments = [
+  {sector:'Accommodation & Food Services', quotes:[
+    'Suppliers are very inconsistent on how they are planning and executing pricing related to tariffs. Overall uncertainty on how to source and how much to source is as high as during the coronavirus pandemic era.',
+    'We continue to experience higher prices, primarily due to the impact of the administration\'s trade and tariff policies.'
+  ]},
+  {sector:'Construction', quotes:[
+    'Pending surge in new capital investments of our customers, specifically in data centers, combined cycle power, and nuclear market sectors. Expect significant business growth in 2026.',
+    'Residential home sales continue to be hampered by mortgage rates. Most of the industry is describing their slowdown as an intentional pause.'
+  ]},
+  {sector:'Health Care', quotes:[
+    'AI data center construction is expected to cause constraints in the IT market and availability.',
+    'Patient volumes appear to be leveling off. Supply chains are operating surprisingly well. Cost of goods remains higher but there are pockets of softening beginning to appear.'
+  ]},
+  {sector:'Mining', quotes:[
+    'Tariff volatility and shifting bilateral trade agreements are materially impacting our purchasing operations. Semiconductor supply constraints continue to pressure component pricing and availability.'
+  ]},
+  {sector:'Real Estate', quotes:[
+    'We expect flat national home prices in 2026, with a forecast of a 0.5% increase and a plausible range from a decrease of 3.6% to a gain of 4.6%.',
+    'Tariff uncertainty continues to add complexity to purchasing, and economic conditions remain mixed.'
+  ]},
+  {sector:'Transportation & Warehousing', quotes:[
+    'Transportation/truck capacity has been extremely tight, causing rates to spike 30% to 40%. Some attributed to weather, some to the Federal Highway Administration\'s push for drivers proficient in English.'
+  ]},
+  {sector:'Utilities', quotes:[
+    'Data centers are causing large spikes in requirements. Suppliers are challenged by capacity and tariffs. This is both an exciting and challenging time in the industry.'
+  ]},
+  {sector:'Wholesale Trade', quotes:[
+    'All data center-related activity continues to grow substantially. Downstream is always steady. The business here is busy. All industries are doing well, minus the oil field business.'
+  ]}
+];
+
+// Manufacturing Industry Comments (Feb 2026)
+const mfgIndustryComments = [
+  {sector:'Chemical Products', quotes:[
+    'Economic activity seems to be also challenging for this year. Some recovery in certain sectors but still lot of cost pressures and soft demand. Cost discipline is the priority.',
+    'January sales continued to provide positive indications for growth opportunities. Demand is improving as tariff uncertainty drives inventory builds across the supply chain.'
+  ]},
+  {sector:'Computer & Electronic Products', quotes:[
+    'Overall orders and supply footprint are improving. As we review customer demand, we are also taking several categories of established materials and supplies out to RFP for review and cost improvements \u2014 in particular, printed circuit assemblies, plastics, sheet metal assemblies and motorized assemblies.'
+  ]},
+  {sector:'Electrical Equipment & Components', quotes:[
+    'Business was slow in January. Many orders pulled into end of 2025 to meet revenue goals. Order book is strong going forward.'
+  ]},
+  {sector:'Food, Beverage & Tobacco Products', quotes:[
+    'Business is improving by the week. Backlog is growing, and new opportunities are everywhere. Monthly shipments are still lower than planned, but improving. Over the past five years, we spent thousands trying to attract new employees and had almost zero responses. In the last six months, we have been inundated with applicants.'
+  ]},
+  {sector:'Machinery', quotes:[
+    'Tariff policy changes affect total acquisition costs and purchasing source decisions. So far this year, tariff instability still exists. Due to the tariffs, most raw materials used in manufacturing, such as steel and wire, need to be sourced domestically, and the cost keeps going up.'
+  ]},
+  {sector:'Miscellaneous Manufacturing', quotes:[
+    'Pricing for outside purchases has stabilized. We are spending significant effort to work with our supply base to mitigate tariff impacts. Backlog is at a healthy level.'
+  ]},
+  {sector:'Petroleum & Coal Products', quotes:[
+    'South American instability has begun to be a factor for our suppliers and inventory management.'
+  ]},
+  {sector:'Transportation Equipment', quotes:[
+    'Today, American produced commodities like steel and aluminum are the highest priced in the world, by far. Hence, the Section 232 tariff policy is having the exact opposite effect of their intention on an American manufacturer like us: It is raising prices while lowering demand and profitability.'
+  ]}
+];
+
+// ==================== CHART DEFAULTS ====================
+Chart.defaults.color = '#c8d4e6';
+Chart.defaults.borderColor = 'rgba(30,45,68,0.5)';
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 11;
+
+const line50Plugin = {
+  id: 'line50',
+  beforeDraw(chart) {
+    const yScale = chart.scales.y;
+    if (!yScale) return;
+    const y50 = yScale.getPixelForValue(50);
+    if (y50 < yScale.top || y50 > yScale.bottom) return;
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1;
+    ctx.moveTo(chart.chartArea.left, y50);
+    ctx.lineTo(chart.chartArea.right, y50);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = "10px 'JetBrains Mono', monospace";
+    ctx.fillText('50 = Neutral', chart.chartArea.right - 75, y50 - 6);
+    ctx.restore();
+  }
+};
+Chart.register(line50Plugin);
+
+function makeLineChart(canvasId, labels, data, color, label, min, max) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+  gradient.addColorStop(0, color + '33');
+  gradient.addColorStop(1, color + '00');
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: label,
+        data: data,
+        borderColor: color,
+        backgroundColor: gradient,
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: color,
+        pointBorderColor: '#151d2e',
+        pointBorderWidth: 2,
+        pointHoverRadius: 6,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45 } },
+        y: { min: min || undefined, max: max || undefined, grid: { color: 'rgba(30,45,68,0.4)' } }
+      }
+    }
+  });
+}
+
+// ==================== DUAL PMI/NMI CHART ====================
+(function(){
+  const ctx = document.getElementById('dualPmiChart').getContext('2d');
+  const gBlue = ctx.createLinearGradient(0,0,0,400);
+  gBlue.addColorStop(0, 'rgba(74,158,255,0.15)');
+  gBlue.addColorStop(1, 'rgba(74,158,255,0)');
+  const gPurple = ctx.createLinearGradient(0,0,0,400);
+  gPurple.addColorStop(0, 'rgba(168,85,247,0.15)');
+  gPurple.addColorStop(1, 'rgba(168,85,247,0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: mfgPMI.labels,
+      datasets: [
+        {
+          label: 'Manufacturing PMI',
+          data: mfgPMI.data,
+          borderColor: '#4a9eff',
+          backgroundColor: gBlue,
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: '#4a9eff',
+          pointBorderColor: '#151d2e',
+          pointBorderWidth: 2,
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Services NMI',
+          data: svcNMI.data,
+          borderColor: '#a855f7',
+          backgroundColor: gPurple,
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: '#a855f7',
+          pointBorderColor: '#151d2e',
+          pointBorderWidth: 2,
+          fill: true,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { usePointStyle: true, padding: 20, font: { size: 12 } }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 45 } },
+        y: { min: 44, max: 60, grid: { color: 'rgba(30,45,68,0.4)' } }
+      }
+    }
+  });
+})();
+
+// ==================== COMPONENT CHARTS ====================
+makeLineChart('mfgNewOrdersChart', mfgMonths12, mfgNewOrders, '#4a9eff', 'New Orders', 38, 60);
+makeLineChart('mfgBacklogChart', mfgMonths12, mfgBacklog, '#4a9eff', 'Order Backlog', 38, 60);
+makeLineChart('mfgProductionChart', mfgMonths12, mfgProduction, '#22d3ee', 'Production', 40, 60);
+makeLineChart('mfgEmploymentChart', mfgMonths12, mfgEmployment, '#ff4a6e', 'Employment', 40, 55);
+makeLineChart('mfgPricesChart', mfgMonths12, mfgPrices, '#ff8c4a', 'Prices Paid', 45, 75);
+makeLineChart('mfgDeliveriesChart', mfgMonths12, mfgDeliveries, '#ffc04a', 'Supplier Deliveries', 45, 60);
+makeLineChart('mfgInventoriesChart', mfgMonths12, mfgInventories, '#a855f7', 'Inventories', 42, 56);
+makeLineChart('mfgCustInvChart', mfgMonths12, mfgCustInv, '#a855f7', 'Customer Inventories', 35, 50);
+makeLineChart('mfgExportsChart', mfgMonths12, mfgExports, '#22d3ee', 'Exports', 36, 55);
+makeLineChart('mfgImportsChart', mfgMonths12, mfgImports, '#22d3ee', 'Imports', 36, 58);
+makeLineChart('svcBAChart', mfgMonths12, svcBA, '#a855f7', 'Business Activity', 45, 65);
+makeLineChart('svcNOChart', mfgMonths12, svcNO, '#22d3ee', 'New Orders', 42, 62);
+makeLineChart('svcEmpChart', mfgMonths12, svcEmp, '#ff4a6e', 'Employment', 42, 55);
+makeLineChart('svcPricesChart', mfgMonths12, svcPrices, '#ff8c4a', 'Prices Paid', 58, 72);
+makeLineChart('svcInventoriesChart', mfgMonths12, svcInventories, '#a855f7', 'Inventories', 42, 60);
+makeLineChart('svcDeliveriesChart', mfgMonths12, svcDeliveries, '#ffc04a', 'Supplier Deliveries', 48, 56);
+
+// ==================== HEAT MAP ====================
+function renderHeatMap() {
+  const table = document.getElementById('mfgHeatMapTable');
+  let html = '<thead><tr><th>Sub-Index</th>';
+  mfgHeatMapData.months.forEach(m => html += `<th>${m}</th>`);
+  html += '</tr></thead><tbody>';
+  mfgHeatMapData.indices.forEach((idx, i) => {
+    html += `<tr><td>${idx}</td>`;
+    mfgHeatMapData.data[i].forEach(val => {
+      let bg, color;
+      if (idx === 'Prices' || idx === 'Deliveries') {
+        // Higher = worse for prices/deliveries
+        if (val >= 60) { bg = 'rgba(255,74,110,0.25)'; color = '#ff4a6e'; }
+        else if (val > 53) { bg = 'rgba(255,192,74,0.2)'; color = '#ffc04a'; }
+        else if (val >= 50) { bg = 'rgba(0,212,170,0.15)'; color = '#00d4aa'; }
+        else { bg = 'rgba(0,212,170,0.25)'; color = '#00d4aa'; }
+      } else {
+        if (val >= 55) { bg = 'rgba(0,212,170,0.3)'; color = '#00d4aa'; }
+        else if (val >= 50) { bg = 'rgba(0,212,170,0.15)'; color = '#00d4aa'; }
+        else if (val >= 47) { bg = 'rgba(255,192,74,0.2)'; color = '#ffc04a'; }
+        else { bg = 'rgba(255,74,110,0.25)'; color = '#ff4a6e'; }
+      }
+      html += `<td style="background:${bg}; color:${color}; font-weight:600;">${val.toFixed(1)}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+renderHeatMap();
+
+function renderSvcHeatMap() {
+  const table = document.getElementById('svcHeatMapTable');
+  let html = '<thead><tr><th>Sub-Index</th>';
+  svcHeatMapData.months.forEach(m => html += `<th>${m}</th>`);
+  html += '</tr></thead><tbody>';
+  svcHeatMapData.indices.forEach((idx, i) => {
+    html += `<tr><td>${idx}</td>`;
+    svcHeatMapData.data[i].forEach(val => {
+      let bg, color;
+      if (idx === 'Prices' || idx === 'Supplier Deliveries') {
+        if (val >= 60) { bg = 'rgba(255,74,110,0.25)'; color = '#ff4a6e'; }
+        else if (val > 53) { bg = 'rgba(255,192,74,0.2)'; color = '#ffc04a'; }
+        else if (val >= 50) { bg = 'rgba(0,212,170,0.15)'; color = '#00d4aa'; }
+        else { bg = 'rgba(0,212,170,0.25)'; color = '#00d4aa'; }
+      } else {
+        if (val >= 55) { bg = 'rgba(0,212,170,0.3)'; color = '#00d4aa'; }
+        else if (val >= 50) { bg = 'rgba(0,212,170,0.15)'; color = '#00d4aa'; }
+        else if (val >= 47) { bg = 'rgba(255,192,74,0.2)'; color = '#ffc04a'; }
+        else { bg = 'rgba(255,74,110,0.25)'; color = '#ff4a6e'; }
+      }
+      html += `<td style="background:${bg}; color:${color}; font-weight:600;">${val.toFixed(1)}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+renderSvcHeatMap();
+
+// ==================== SECTOR BARS ====================
+function renderSectorBars(containerId, sectors) {
+  const container = document.getElementById(containerId);
+  const maxAbs = Math.max(...sectors.map(s => Math.abs(s.score)));
+  let html = '';
+  sectors.forEach(s => {
+    const pct = (Math.abs(s.score) / maxAbs * 50);
+    const isPos = s.score >= 0;
+    const fillClass = isPos ? 'positive' : 'negative';
+    const scoreClass = isPos ? 'positive' : 'negative';
+    const fillStyle = isPos
+      ? `left:50%; width:${pct}%;`
+      : `right:50%; width:${pct}%;`;
+    html += `<div class="sector-bar">
+      <div class="sector-name">${s.name}</div>
+      <div class="sector-bar-track">
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.1);"></div>
+        <div class="sector-bar-fill ${fillClass}" style="${fillStyle}"></div>
+      </div>
+      <div class="sector-score ${scoreClass}">${isPos ? '+' : ''}${s.score.toFixed(1)}</div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+renderSectorBars('mfgSectorBars', mfgSectors);
+renderSectorBars('svcSectorBars', svcSectors);
+
+// ==================== INDUSTRY COMMENTS ====================
+function renderCommentsTo(containerId, data) {
+  const container = document.getElementById(containerId);
+  let html = '';
+  data.forEach(sector => {
+    html += `<div class="comment-section"><div class="comment-sector">${sector.sector}</div>`;
+    sector.quotes.forEach(q => {
+      html += `<div class="comment-quote">"${q}"</div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+renderCommentsTo('industryComments', industryComments);
+renderCommentsTo('mfgIndustryComments', mfgIndustryComments);
+
+// ==================== TAB NAVIGATION ====================
+function showMfgTab(tabName) {
+  document.querySelectorAll('.mfg-tab').forEach(t => t.style.display = 'none');
+  document.getElementById('mfg-' + tabName).style.display = 'block';
+  document.querySelectorAll('#mfgTabs .tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  // Resize charts after showing
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+}
+function showSvcTab(tabName) {
+  document.querySelectorAll('.svc-tab').forEach(t => t.style.display = 'none');
+  document.getElementById('svc-' + tabName).style.display = 'block';
+  document.querySelectorAll('#svcTabs .tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+}
+
+</script>
+</body>
+</html>
