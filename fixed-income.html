@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marlon | Fixed Income & Credit Research</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #151d2e;
+    --bg-card-hover: #1a2438;
+    --border: #1e2d44;
+    --border-accent: #2a3f5f;
+    --text-primary: #e8edf5;
+    --text-secondary: #c0d0e8;
+    --text-muted: #94a8c4;
+    --green: #00d4aa;
+    --green-dim: #00d4aa33;
+    --red: #ff6b6b;
+    --red-dim: #ff6b6b33;
+    --amber: #fbbf24;
+    --amber-dim: #fbbf2433;
+    --blue: #4a9eff;
+    --blue-dim: #4a9eff33;
+    --cyan: #22d3ee;
+    --orange: #f97316;
+    --purple: #a78bfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'DM Sans', 'Inter', -apple-system, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 3px; }
+
+  /* Header */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg-primary);
+    backdrop-filter: blur(20px);
+  }
+  .header-inner {
+    max-width: 1600px; margin: 0 auto; padding: 0 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .logo-mark {
+    width: 42px; height: 42px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--green), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1.15rem; color: var(--bg-primary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .logo-text { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .logo-text span { color: var(--text-muted); font-weight: 400; }
+
+  .nav { display: flex; gap: 2rem; }
+  .nav a {
+    color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;
+    font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav a:hover { color: var(--green); }
+
+  /* Hero */
+  .hero {
+    max-width: 1600px; margin: 0 auto; padding: 4rem 3rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--green-dim); color: var(--green);
+    padding: 0.35rem 0.85rem; border-radius: 100px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; margin-bottom: 1.25rem;
+    border: 1px solid var(--green)33;
+  }
+  .hero-tag .dot {
+    width: 6px; height: 6px; background: var(--green);
+    border-radius: 50%; animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .hero h1 {
+    font-size: 2.75rem; font-weight: 700; letter-spacing: -0.03em;
+    line-height: 1.15; margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    color: var(--text-primary); font-size: 1.05rem;
+    line-height: 1.75;
+  }
+  .hero-meta {
+    display: flex; gap: 2rem; margin-top: 2rem;
+    padding-top: 1.5rem; border-top: 1px solid var(--border);
+  }
+  .hero-meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+  .hero-meta-label {
+    font-size: 0.7rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .hero-meta-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem; color: var(--text-primary); font-weight: 500;
+  }
+
+  /* Container */
+  .container { max-width: 1600px; margin: 0 auto; padding: 0 3rem; }
+
+  /* Sections */
+  .section { padding: 3rem 0; border-bottom: 1px solid var(--border); }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 2rem;
+  }
+  .section-title {
+    font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .section-subtitle {
+    font-size: 0.8rem; color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.25rem;
+    transition: all 0.2s;
+  }
+  .card:hover {
+    border-color: var(--border-accent);
+    background: var(--bg-card-hover);
+  }
+  .card-label {
+    font-size: 0.7rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .card-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem; font-weight: 700;
+  }
+  .card-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; margin-top: 0.35rem;
+    display: flex; align-items: center; gap: 0.35rem;
+  }
+  .up { color: var(--red); }
+  .down { color: var(--green); }
+  .flat { color: var(--text-muted); }
+  .signal-badge {
+    display: inline-block; padding: 0.15rem 0.5rem;
+    border-radius: 4px; font-size: 0.65rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+  }
+  .signal-stable { background: var(--blue-dim); color: var(--blue); }
+  .signal-rising { background: var(--amber-dim); color: var(--amber); }
+  .signal-rising-fast { background: var(--red-dim); color: var(--red); }
+  .signal-tightening { background: var(--green-dim); color: var(--green); }
+  .signal-stress { background: var(--red-dim); color: var(--red); }
+
+  /* Chart containers */
+  .chart-container {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.5rem;
+  }
+  .chart-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  .chart-full { grid-column: 1 / -1; }
+  .chart-title {
+    font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; color: #ffffff;
+  }
+  .chart-desc {
+    font-size: 0.75rem; color: var(--text-primary); margin-bottom: 1rem;
+  }
+  .section-context {
+    color: var(--text-primary); font-size: 0.92rem; line-height: 1.75;
+    margin-bottom: 1.5rem; text-wrap: pretty;
+  }
+  .section-context strong { color: var(--text-primary); }
+  .chart-wrap { position: relative; height: 380px; }
+
+  /* Tables */
+  .data-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+  .data-table th {
+    text-align: left; padding: 0.6rem 0.75rem;
+    font-size: 0.65rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .data-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .data-table tr:hover td { background: var(--bg-card-hover); }
+  .data-table .highlight-row td { background: var(--green-dim); }
+
+  /* Sector outlook pills */
+  .outlook-pill {
+    display: inline-block; padding: 0.2rem 0.6rem;
+    border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+  }
+  .outlook-outperform { background: var(--green-dim); color: var(--green); }
+  .outlook-underperform { background: var(--red-dim); color: var(--red); }
+  .outlook-neutral { background: var(--amber-dim); color: var(--amber); }
+  .outlook-mixed { background: var(--blue-dim); color: var(--blue); }
+
+  .direction-pill {
+    display: inline-block; padding: 0.15rem 0.5rem;
+    border-radius: 4px; font-size: 0.68rem; font-weight: 600;
+  }
+  .dir-overweight { background: var(--green-dim); color: var(--green); }
+  .dir-underweight { background: var(--red-dim); color: var(--red); }
+  .dir-neutral { background: var(--amber-dim); color: var(--amber); }
+
+  /* Methodology */
+  .methodology-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  }
+  .method-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.5rem;
+  }
+  .method-card h3 {
+    font-size: 0.95rem; margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .method-card p {
+    font-size: 0.82rem; color: var(--text-primary); line-height: 1.7;
+  }
+  .method-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  /* Regime bar */
+  .regime-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  .regime-item {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem;
+    transition: all 0.2s;
+  }
+  .regime-item:hover { border-color: var(--border-accent); }
+  .regime-label {
+    font-size: 0.65rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+  }
+  .regime-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem;
+  }
+  .regime-tag {
+    font-size: 0.6rem; padding: 0.1rem 0.4rem;
+    border-radius: 3px; font-weight: 600;
+    display: inline-block;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 2.5rem 0; text-align: center;
+    color: var(--text-muted); font-size: 0.8rem;
+  }
+  .footer a { color: var(--green); text-decoration: none; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .chart-row { grid-template-columns: 1fr; }
+    .methodology-grid { grid-template-columns: 1fr; }
+    .regime-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 2rem; }
+    .nav { display: none; }
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Aggregate signal banner */
+  .agg-signal {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.25rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .agg-signal-label { font-size: 0.85rem; font-weight: 600; }
+  .agg-signal-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem; font-weight: 700;
+  }
+  .bearish { color: var(--red); }
+  .cautious { color: var(--amber); }
+  .bullish { color: var(--green); }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.5rem 1rem;
+    color: var(--text-secondary); font-size: 0.78rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    font-family: inherit;
+  }
+  .tab-btn:hover { border-color: var(--border-accent); color: var(--text-primary); }
+  .tab-btn.active {
+    background: var(--green-dim); border-color: var(--green);
+    color: var(--green);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html" style="text-decoration:none; color:inherit;">
+      <div class="logo-mark">MW</div>
+      <div class="logo-text">Marlon Whittock <span>| Macro Research</span></div>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="fixed-income.html">Fixed Income</a>
+      <a href="ism-pmi-dashboard.html">ISM PMI &amp; NMI</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-tag"><span class="dot"></span> Live Research</div>
+  <h1>U.S. Fixed Income & Credit<br>Market Intelligence</h1>
+  <p>Fixed income markets are the backbone of the global financial system and one of the most powerful leading indicators of economic direction. Treasury yields reflect the market's collective expectations for growth, inflation, and Federal Reserve policy, while corporate credit spreads reveal how investors are pricing risk across the economy. When the yield curve steepens, it signals economic acceleration ahead. When it inverts, it has historically preceded every U.S. recession. Credit spreads tightening means confidence is building; widening means stress is forming beneath the surface. This research platform tracks these dynamics in real time, translating bond market signals into actionable insights for GDP forecasting, sector rotation, and portfolio positioning. Whether you're managing a multi-asset portfolio or building conviction around a macro trade, understanding the fixed income landscape gives you a forward-looking edge that equity-only analysis simply cannot provide.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Data As Of</span>
+      <span class="hero-meta-value">March 18â19, 2026</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Coverage</span>
+      <span class="hero-meta-value">UST Curve Â· IG/HY Credit Â· ETFs</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Update Frequency</span>
+      <span class="hero-meta-value">Weekly</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Regime</span>
+      <span class="hero-meta-value" style="color: var(--amber);">Late-Cycle Â· Higher for Longer</span>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+<section class="section" id="dashboard">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Market Dashboard</div>
+      <div class="section-subtitle">Key benchmark yields & credit indices</div>
+    </div>
+  </div>
+  <p class="section-context">A snapshot of the most critical rates and credit benchmarks driving macro conditions. <strong>Fed Funds at 3.64%</strong> has been unchanged since December 2025 after 175bp of cumulative cuts from the 5.33% peak. The front end of the curve is repricing sharply higher month-over-month, while <strong>CCC high-yield stress at 13.62%</strong> signals acute pressure among the weakest corporate borrowers. The regime assessment below shows a late-cycle environment with restrictive real rates and elevated term premiums.</p>
+  <div class="cards-grid" id="yield-cards"></div>
+
+  <!-- Regime Assessment -->
+  <div class="regime-grid" id="regime-grid"></div>
+</section>
+
+<!-- YIELD CURVE & SPREADS -->
+<section class="section" id="yields">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Treasury Yield Curve & Spreads</div>
+      <div class="section-subtitle">Nominal yields across maturities Â· Weekly history</div>
+    </div>
+  </div>
+  <p class="section-context">The yield curve has <strong>bear-steepened sharply</strong> over the past month. Every maturity from 6 months outward has risen, with the 1-to-3-year belly seeing the largest moves (+12 to +19bp MoM). The 2s10s spread has widened to +56bp, fully normalizing from its -108bp inversion in July 2023 â but this is a bear steepening driven by rising rates, not falling front-end rates, which historically carries less bullish equity implications. On the TIPS side, the <strong>10-year real yield at 1.85%</strong> sits well above the estimated neutral real rate of 0.5-1.0%, placing financial conditions firmly in restrictive territory. Breakeven inflation at 2.36% remains stubbornly above the Fed's 2% target, constraining further easing.</p>
+  <div class="chart-row">
+    <div class="chart-container">
+      <div class="chart-title">U.S. Treasury Yield Curve</div>
+      <div class="chart-desc">Current vs. 1 week ago vs. 1 month ago vs. 3 months ago</div>
+      <div class="chart-wrap"><canvas id="yieldCurveChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">TIPS Real Yields & Breakeven Inflation</div>
+      <div class="chart-desc">5yrâ30yr TIPS real yields with implied breakeven rates</div>
+      <div class="chart-wrap"><canvas id="tipsChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDIT -->
+<section class="section" id="credit">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Corporate Credit Markets</div>
+      <div class="section-subtitle">ICE BofAML indices Â· AAA / BBB / CCC & below</div>
+    </div>
+  </div>
+  <p class="section-context">Corporate credit markets are deteriorating across the quality spectrum. Investment-grade spreads are widening â <strong>AAA at 63bp over Treasuries</strong> (+5bp MoM) and <strong>BBB at 104bp</strong> (+11bp MoM) â signaling declining risk appetite even among top-tier issuers. The real alarm is in high yield: <strong>CCC yields have surged 119bp in a single month to 13.62%</strong>, with the CCC-Treasury spread blowing out to 937bp. Historically, CCC yields above 13% have preceded S&P 500 declines 78% of the time. The bond ETF market confirms the signal â TLT, LQD, JNK, and HYG are all declining in synchronized fashion, which is a stronger bearish indicator than isolated high-yield selling.</p>
+
+  <div class="agg-signal">
+    <div>
+      <div class="agg-signal-label">Aggregate Credit Signal</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted);">6 of 7 indicators bearish Â· Broad-based credit deterioration</div>
+    </div>
+    <div class="agg-signal-value bearish">BEARISH</div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-container">
+      <div class="chart-title">Corporate Yield Indices</div>
+      <div class="chart-desc">AAA, BBB, CCC vs. 10yr Treasury â 60 trading days</div>
+      <div class="chart-wrap"><canvas id="corpYieldChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Bond ETF Performance</div>
+      <div class="chart-desc">TLT, LQD, JNK, HYG â Indexed to 100</div>
+      <div class="chart-wrap"><canvas id="etfChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Credit spread table -->
+  <div class="chart-container" style="margin-top: 1rem;">
+    <div class="chart-title">Credit Spread Summary</div>
+    <div class="chart-desc">Spreads vs. benchmark Â· Direction & risk signals</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Spread Pair</th><th>Current (bp)</th><th>WoW</th><th>MoM</th><th>Direction</th><th>Risk Signal</th></tr>
+      </thead>
+      <tbody id="spread-table-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- RATE CUT EXPECTATIONS -->
+<section class="section" id="rates">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Rate Cut Expectations</div>
+      <div class="section-subtitle">Market-implied Fed path from Treasury curve & futures</div>
+    </div>
+  </div>
+  <p class="section-context">The market has dramatically repriced rate expectations over the past month. As recently as mid-February, the <strong>1-year Treasury implied 0.84 cuts</strong> (in 25bp increments) â now that reading has collapsed to just 0.12. The 2-year implied reading has flipped negative to -0.04, meaning the curve is now pricing a slight probability of tightening, not easing. The base case (~60% probability) is <strong>no change</strong> in the Fed Funds rate. One cut carries ~25% probability, down sharply from the three-to-four cuts priced just two months ago. The easing cycle appears over unless the economy experiences a meaningful deterioration in employment or a deflationary shock.</p>
+
+  <div class="chart-row">
+    <div class="chart-container">
+      <div class="chart-title">Implied Rate Cuts â Weekly Trend</div>
+      <div class="chart-desc">1yr & 2yr implied cuts (in 25bp increments) + 10yr breakeven</div>
+      <div class="chart-wrap"><canvas id="rateTrendChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Rate Cut Scenario Table</div>
+      <div class="chart-desc">Probability-weighted outcomes based on curve pricing</div>
+      <table class="data-table">
+        <thead>
+          <tr><th>Scenario</th><th># Moves</th><th>Î (bp)</th><th>Result FF</th><th>Prob.</th><th>View</th></tr>
+        </thead>
+        <tbody id="scenario-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECTOR IMPLICATIONS -->
+<section class="section" id="sectors">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Equity Sector Implications</div>
+      <div class="section-subtitle">3-month relative performance outlook Â· Rate & credit transmission</div>
+    </div>
+  </div>
+  <p class="section-context">Rate and credit signals are mapped to equity sectors through established transmission channels. The current regime â bear steepening, restrictive real rates, widening credit spreads â creates a clear set of winners and losers. <strong>Financials (banks, insurance) directly benefit</strong> from wider net interest margins and increased lending demand as bond issuance becomes more expensive. <strong>Energy and defense</strong> are insulated from credit stress with strong cash flows. On the other side, <strong>long-duration equity (SaaS, REITs, utilities) faces the sharpest headwinds</strong> from rising discount rates and tighter corporate budgets. The credit-to-equity signal matrix below shows 6 of 7 indicators bearish â the broadest deterioration since early 2023.</p>
+
+  <!-- Credit-Equity signals -->
+  <div class="chart-container" style="margin-bottom: 1rem;">
+    <div class="chart-title">Credit-to-Equity Signal Matrix</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Signal</th><th>Reading</th><th>MoM</th><th>Implication</th><th>Confidence</th></tr>
+      </thead>
+      <tbody id="credit-equity-signals-body"></tbody>
+    </table>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('rate-sectors')">Rate-Driven Signals</button>
+    <button class="tab-btn" onclick="switchTab('credit-sectors')">Credit-Driven Signals</button>
+  </div>
+
+  <div class="tab-content active" id="rate-sectors">
+    <div class="chart-container">
+      <table class="data-table">
+        <thead>
+          <tr><th>Sector</th><th>GICS</th><th>3-Mo Outlook</th><th>Direction</th><th>Key Driver</th></tr>
+        </thead>
+        <tbody id="rate-sectors-body"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="tab-content" id="credit-sectors">
+    <div class="chart-container">
+      <table class="data-table">
+        <thead>
+          <tr><th>Sector</th><th>GICS</th><th>3-Mo Outlook</th><th>Direction</th><th>Key Credit Driver</th></tr>
+        </thead>
+        <tbody id="credit-sectors-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section class="section" id="methodology">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Methodology</div>
+      <div class="section-subtitle">Analytical framework & data sources</div>
+    </div>
+  </div>
+  <p class="section-context">This research analyzes the <strong>U.S. Treasury yield curve and corporate credit markets</strong> to identify rate regime shifts, credit stress signals, and their transmission into equity sector performance. The yield curve framework decomposes movements into level, slope, and curvature factors across the full maturity spectrum â from the Fed Funds rate through the 30-year bond. Credit analysis layers in investment-grade and high-yield corporate spreads to gauge risk appetite and default expectations. Rate cut expectations are derived from Treasury curve spreads versus the Fed Funds rate using an expectations hypothesis model. Equity sector implications are determined by mapping rate and credit signals through historically validated transmission channels, cross-referenced across multiple rate regimes since 1990.</p>
+  <div class="methodology-grid">
+    <div class="method-card">
+      <h3><span class="method-icon" style="background: var(--blue-dim); color: var(--blue);">&#9670;</span> Data Sources</h3>
+      <p>Treasury yields sourced from the Federal Reserve H.15 release (daily constant-maturity rates). Corporate bond yields from ICE BofAML indices via FRED (AAA, BBB, CCC & Below). ETF prices from market close data. All series updated weekly with daily granularity where available. Historical depth: 60+ years for Treasuries, 30 years for corporate indices.</p>
+    </div>
+    <div class="method-card">
+      <h3><span class="method-icon" style="background: var(--green-dim); color: var(--green);">&#9670;</span> Yield Curve Framework</h3>
+      <p>Yield curve analysis decomposes movements into level, slope, and curvature factors. Key spreads tracked: 2s10s (cycle signal), Fed Fundsâ2yr (policy expectations), 10yrâ30yr (term premium). Curve shape classified as: inverted, flat, normal, or steep â with bull/bear qualifiers based on rate direction.</p>
+    </div>
+    <div class="method-card">
+      <h3><span class="method-icon" style="background: var(--amber-dim); color: var(--amber);">&#9670;</span> Rate Expectations Model</h3>
+      <p>Implied rate paths derived from Treasury curve spreads vs. Fed Funds rate. Each maturity's spread is translated into implied 25bp moves using a simple expectations hypothesis framework. Scenario probabilities estimated from curve-implied terminal rates matched against current 1yr and 2yr yields. Weekly trend captures shifts in market pricing.</p>
+    </div>
+    <div class="method-card">
+      <h3><span class="method-icon" style="background: var(--red-dim); color: var(--red);">&#9670;</span> Equity Transmission</h3>
+      <p>Rate and credit signals are mapped to equity sectors through established transmission channels: discount rate effects (growth/tech), NIM sensitivity (banks/insurance), credit availability (REITs/utilities), and commodity-rate correlations (energy/materials). Historical correlations validated across multiple rate regimes since 1990.</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <p style="margin-bottom: 0.5rem;">&copy; 2026 Marlon Whittock â Fixed Income & Credit Research</p>
+    <p>Independent analysis. Not investment advice. Data as of March 18â19, 2026.</p>
+  </div>
+</footer>
+
+<script>
+// ===== DATA =====
+const nominalYields = [
+  {m:"Fed Funds",y:3.64,wow:0,mom:0,yoy:-0.69,signal:"Stable"},
+  {m:"1mo",y:3.75,wow:0,mom:0.03,yoy:-0.62,signal:"Stable"},
+  {m:"3mo",y:3.71,wow:0,mom:0.02,yoy:-0.63,signal:"Stable"},
+  {m:"6mo",y:3.69,wow:0.01,mom:0.10,yoy:-0.58,signal:"Rising"},
+  {m:"1yr",y:3.61,wow:0.05,mom:0.18,yoy:-0.43,signal:"Rising Fast"},
+  {m:"2yr",y:3.65,wow:0.12,mom:0.19,yoy:-0.31,signal:"Rising Fast"},
+  {m:"3yr",y:3.66,wow:0.12,mom:0.15,yoy:-0.29,signal:"Rising Fast"},
+  {m:"5yr",y:3.80,wow:0.13,mom:0.10,yoy:-0.24,signal:"Rising"},
+  {m:"7yr",y:3.99,wow:0.12,mom:0.08,yoy:-0.17,signal:"Rising"},
+  {m:"10yr",y:4.21,wow:0.11,mom:0.07,yoy:-0.07,signal:"Rising"},
+  {m:"20yr",y:4.80,wow:0.12,mom:0.08,yoy:0.17,signal:"Rising"},
+  {m:"30yr",y:4.83,wow:0.10,mom:0.06,yoy:0.24,signal:"Rising"}
+];
+
+const tipsData = [
+  {m:"5yr TIPS",real:1.21,be:2.59},
+  {m:"7yr TIPS",real:1.54,be:2.45},
+  {m:"10yr TIPS",real:1.85,be:2.36},
+  {m:"20yr TIPS",real:2.34,be:2.46},
+  {m:"30yr TIPS",real:2.59,be:2.24}
+];
+
+const creditSummary = [
+  {idx:"AAA",y:4.88,wow:-4,mom:28,yoy:20,spread:63,signal:"Tightening"},
+  {idx:"BBB",y:5.29,wow:1,mom:36,yoy:-3,spread:104,signal:"Tightening"},
+  {idx:"CCC & Below",y:13.62,wow:18,mom:119,yoy:112,spread:937,signal:"Stress"}
+];
+
+const spreadSummary = [
+  {pair:"AAA over 10yr Treasury",current:63,wow:-5,mom:5,dir:"Widening",risk:"Risk-Off"},
+  {pair:"BBB over 10yr Treasury",current:104,wow:0,mom:11,dir:"Widening",risk:"Risk-Off"},
+  {pair:"BBB over AAA",current:41,wow:-5,mom:6,dir:"Widening MoM",risk:"Caution"},
+  {pair:"CCC over BBB",current:833,wow:-4,mom:30,dir:"Widening",risk:"Risk-Off"},
+  {pair:"CCC over 10yr Treasury",current:937,wow:-4,mom:41,dir:"Widening",risk:"Risk-Off"}
+];
+
+// Yield curve time series (multiple dates)
+const curveDates = [
+  {label:"Mar 18 (Current)",data:[3.64,3.75,3.71,3.69,3.61,3.65,3.66,3.80,3.99,4.21,4.80,4.83],color:"#00d68f",width:3},
+  {label:"Mar 11 (1w ago)",data:[3.64,3.75,3.71,3.68,3.56,3.53,3.54,3.67,3.87,4.10,4.68,4.73],color:"#38bdf8",width:1.5},
+  {label:"Feb 18 (1m ago)",data:[3.64,3.72,3.69,3.59,3.43,3.46,3.51,3.70,3.91,4.14,4.72,4.77],color:"#a78bfa",width:1.5},
+  {label:"Dec 31 (3m ago)",data:[3.64,3.71,3.66,3.59,3.51,3.46,3.56,3.70,3.92,4.16,4.77,4.82],color:"#5a6f8f",width:1}
+];
+const curveLabels = ["FF","1m","3m","6m","1y","2y","3y","5y","7y","10y","20y","30y"];
+
+// Corp yield time series (reversed for chronological order)
+const corpTS = [
+  {d:"2026-03-19",aaa:4.88,bbb:5.29,ccc:13.62,t10:4.25},
+  {d:"2026-03-18",aaa:4.89,bbb:5.29,ccc:13.47,t10:4.26},
+  {d:"2026-03-17",aaa:4.85,bbb:5.23,ccc:13.38,t10:4.20},
+  {d:"2026-03-16",aaa:4.89,bbb:5.26,ccc:13.49,t10:4.23},
+  {d:"2026-03-13",aaa:4.96,bbb:5.32,ccc:13.61,t10:4.28},
+  {d:"2026-03-12",aaa:4.92,bbb:5.28,ccc:13.44,t10:4.27},
+  {d:"2026-03-11",aaa:4.87,bbb:5.19,ccc:13.19,t10:4.21},
+  {d:"2026-03-10",aaa:4.78,bbb:5.10,ccc:13.14,t10:4.15},
+  {d:"2026-03-09",aaa:4.72,bbb:5.07,ccc:13.35,t10:4.12},
+  {d:"2026-03-06",aaa:4.76,bbb:5.09,ccc:13.27,t10:4.15},
+  {d:"2026-03-05",aaa:4.74,bbb:5.06,ccc:13.12,t10:4.13},
+  {d:"2026-03-04",aaa:4.70,bbb:5.02,ccc:13.07,t10:4.09},
+  {d:"2026-03-03",aaa:4.69,bbb:5.02,ccc:13.18,t10:4.06},
+  {d:"2026-03-02",aaa:4.63,bbb:4.96,ccc:12.54,t10:4.01},
+  {d:"2026-02-27",aaa:4.63,bbb:4.97,ccc:12.52,t10:4.01},
+  {d:"2026-02-26",aaa:4.60,bbb:4.93,ccc:12.43,t10:3.98},
+  {d:"2026-02-25",aaa:4.63,bbb:4.96,ccc:12.58,t10:4.01},
+  {d:"2026-02-24",aaa:4.63,bbb:4.97,ccc:12.55,t10:4.01},
+  {d:"2026-02-21",aaa:4.63,bbb:4.95,ccc:12.61,t10:4.01},
+  {d:"2026-02-20",aaa:4.61,bbb:4.93,ccc:12.46,t10:3.99}
+].reverse();
+
+// ETF time series
+const etfTS = [
+  {d:"2026-03-19",tlt:87.49,lqd:109.19,jnk:95.79,hyg:79.66},
+  {d:"2026-03-18",tlt:86.96,lqd:108.71,jnk:95.58,hyg:79.40},
+  {d:"2026-03-17",tlt:87.45,lqd:109.30,jnk:96.03,hyg:79.81},
+  {d:"2026-03-16",tlt:87.21,lqd:108.69,jnk:95.65,hyg:79.45},
+  {d:"2026-03-13",tlt:86.54,lqd:108.17,jnk:95.25,hyg:79.20},
+  {d:"2026-03-12",tlt:86.97,lqd:108.57,jnk:95.47,hyg:79.35},
+  {d:"2026-03-11",tlt:87.14,lqd:109.16,jnk:96.11,hyg:79.86},
+  {d:"2026-03-10",tlt:88.28,lqd:110.06,jnk:96.31,hyg:80.04},
+  {d:"2026-03-09",tlt:89.23,lqd:110.82,jnk:96.43,hyg:80.17},
+  {d:"2026-03-06",tlt:88.46,lqd:110.16,jnk:95.91,hyg:79.69},
+  {d:"2026-03-05",tlt:88.79,lqd:110.53,jnk:96.38,hyg:80.08},
+  {d:"2026-03-04",tlt:89.15,lqd:110.97,jnk:96.80,hyg:80.40},
+  {d:"2026-03-03",tlt:89.43,lqd:110.87,jnk:96.46,hyg:80.12},
+  {d:"2026-03-02",tlt:89.57,lqd:111.22,jnk:97.13,hyg:80.66},
+  {d:"2026-02-27",tlt:89.48,lqd:111.24,jnk:97.02,hyg:80.60},
+  {d:"2026-02-26",tlt:89.89,lqd:111.67,jnk:97.32,hyg:80.79},
+  {d:"2026-02-25",tlt:89.47,lqd:111.15,jnk:96.99,hyg:80.50},
+  {d:"2026-02-24",tlt:89.58,lqd:111.27,jnk:97.06,hyg:80.57},
+  {d:"2026-02-21",tlt:89.62,lqd:111.37,jnk:97.14,hyg:80.62},
+  {d:"2026-02-20",tlt:89.80,lqd:111.50,jnk:97.20,hyg:80.70}
+].reverse();
+
+// Weekly rate cut trend
+const weeklyTrend = [
+  {d:"01/14",ff:3.64,c1:0.20,c2:-0.44,be:2.34},
+  {d:"01/21",ff:3.64,c1:0.48,c2:0.16,be:2.33},
+  {d:"01/28",ff:3.64,c1:0.44,c2:0.16,be:2.33},
+  {d:"02/04",ff:3.64,c1:0.56,c2:0.40,be:2.34},
+  {d:"02/11",ff:3.64,c1:0.68,c2:0.40,be:2.35},
+  {d:"02/18",ff:3.64,c1:0.84,c2:0.72,be:2.31},
+  {d:"02/25",ff:3.64,c1:0.56,c2:0.72,be:2.28},
+  {d:"03/04",ff:3.64,c1:0.52,c2:0.88,be:2.26},
+  {d:"03/11",ff:3.64,c1:0.32,c2:0.44,be:2.31},
+  {d:"03/18",ff:3.64,c1:0.12,c2:-0.04,be:2.36}
+];
+
+const scenarios = [
+  {s:"3 Hikes",m:-3,bp:-75,ff:4.39,p:"~0%",v:"Not Priced"},
+  {s:"2 Hikes",m:-2,bp:-50,ff:4.14,p:"~0%",v:"Not Priced"},
+  {s:"1 Hike",m:-1,bp:-25,ff:3.89,p:"<5%",v:"Tail Risk"},
+  {s:"No Change",m:0,bp:0,ff:3.64,p:"~60%",v:"Base Case"},
+  {s:"1 Cut",m:1,bp:25,ff:3.39,p:"~25%",v:"Possible"},
+  {s:"2 Cuts",m:2,bp:50,ff:3.14,p:"~10%",v:"Unlikely"},
+  {s:"3 Cuts",m:3,bp:75,ff:2.89,p:"~3%",v:"Very Unlikely"},
+  {s:"4 Cuts",m:4,bp:100,ff:2.64,p:"<2%",v:"Tail Risk"}
+];
+
+const regime = [
+  {signal:"2s10s Curve",current:"+56bp",regime:"Late-Cycle Normal",trend:"Steepening",color:"var(--amber)"},
+  {signal:"FF-2yr Spread",current:"-1bp",regime:"Terminal Pricing",trend:"Compressing",color:"var(--red)"},
+  {signal:"10yr Breakeven",current:"2.36%",regime:"Elevated",trend:"Rising",color:"var(--amber)"},
+  {signal:"30yr Premium",current:"+62bp",regime:"Supply Premium",trend:"Stable",color:"var(--blue)"},
+  {signal:"Real Rate (10yr)",current:"1.85%",regime:"Restrictive",trend:"Rising",color:"var(--red)"}
+];
+
+const creditEquitySignals = [
+  {sig:"IG Yield Direction",read:"Rising (+28/+36bp MoM)",mom:"+28bp / +36bp",imp:"Bearish",conf:"High"},
+  {sig:"IG Credit Spread",read:"Widening (63bp AAA, 104bp BBB)",mom:"+5bp / +11bp",imp:"Bearish",conf:"High"},
+  {sig:"HY Spread (CCC-BBB)",read:"833bp (elevated)",mom:"+30bp",imp:"Bearish",conf:"Very High"},
+  {sig:"CCC Yield Level",read:"13.62% (+119bp MoM)",mom:"+119bp",imp:"Bearish",conf:"Very High"},
+  {sig:"10yr Treasury",read:"4.25% (rising)",mom:"+28bp",imp:"Mixed",conf:"Moderate"},
+  {sig:"TLT Price Trend",read:"$87.49 (-4.1% YoY)",mom:"-2.3%",imp:"Bearish",conf:"High"},
+  {sig:"IG vs HY Divergence",read:"Both falling (LQD -2.2%, JNK -1.8%)",mom:"Broad selloff",imp:"Bearish",conf:"High"}
+];
+
+const rateSectors = [
+  {sec:"Large-Cap Banks",gics:"Financials",out:"Outperform",dir:"\u25b2 Overweight",drv:"Bear steepening \u2192 NIM expansion"},
+  {sec:"P&C Insurance",gics:"Financials",out:"Outperform",dir:"\u25b2 Overweight",drv:"Rising yields \u2192 higher float income"},
+  {sec:"Integrated Oil & Gas",gics:"Energy",out:"Outperform",dir:"\u25b2 Overweight",drv:"Positive real rate-energy correlation"},
+  {sec:"Defense & Aerospace",gics:"Industrials",out:"Outperform",dir:"\u25b2 Overweight",drv:"Fiscal spending supports revenue"},
+  {sec:"Pharma / Managed Care",gics:"Healthcare",out:"Outperform",dir:"\u25b2 Overweight",drv:"Low duration + stable cash flows"},
+  {sec:"Cloud SaaS / AI Infra",gics:"Technology",out:"Underperform",dir:"\u25bc Underweight",drv:"Rising real rates \u2192 multiple compression"},
+  {sec:"Semiconductors",gics:"Technology",out:"Neutral",dir:"\u25c6 Neutral",drv:"Cyclical demand offsets rate headwind"},
+  {sec:"Homebuilders",gics:"Cons. Disc.",out:"Underperform",dir:"\u25bc Underweight",drv:"10yr \u2192 mortgage rates \u2192 affordability"},
+  {sec:"REITs",gics:"Real Estate",out:"Underperform",dir:"\u25bc Underweight",drv:"Rising cap rates + refinancing risk"},
+  {sec:"Utilities",gics:"Utilities",out:"Underperform",dir:"\u25bc Underweight",drv:"Bond proxies lose appeal vs. risk-free"},
+  {sec:"Consumer Staples",gics:"Cons. Staples",out:"Neutral",dir:"\u25c6 Neutral",drv:"Defensive but yield disadvantage"},
+  {sec:"Retail / E-Commerce",gics:"Cons. Disc.",out:"Underperform",dir:"\u25bc Underweight",drv:"Consumer credit repricing headwind"}
+];
+
+const creditSectors = [
+  {sec:"Large-Cap Banks",gics:"Financials",out:"Outperform",dir:"\u25b2 Overweight",drv:"Rising rates \u2192 wider NIM"},
+  {sec:"P&C / Reinsurance",gics:"Financials",out:"Outperform",dir:"\u25b2 Overweight",drv:"Rising rates \u2192 higher float income"},
+  {sec:"Integrated Oil & Gas",gics:"Energy",out:"Outperform",dir:"\u25b2 Overweight",drv:"Low leverage, cash-flow positive"},
+  {sec:"Defense & Aerospace",gics:"Industrials",out:"Outperform",dir:"\u25b2 Overweight",drv:"Govt-backed revenue, low credit risk"},
+  {sec:"Pharma / Managed Care",gics:"Healthcare",out:"Outperform",dir:"\u25b2 Overweight",drv:"Low leverage, pricing power"},
+  {sec:"Cloud SaaS / AI",gics:"Technology",out:"Underperform",dir:"\u25bc Underweight",drv:"Duration sensitivity + IG spread widening"},
+  {sec:"Homebuilders",gics:"Cons. Disc.",out:"Underperform",dir:"\u25bc Underweight",drv:"Mortgage rate + HY spread pressure"},
+  {sec:"REITs (Office/Retail)",gics:"Real Estate",out:"Underperform",dir:"\u25bc Underweight",drv:"Rising cap rates + CCC stress signal"},
+  {sec:"Utilities",gics:"Utilities",out:"Underperform",dir:"\u25bc Underweight",drv:"Leveraged balance sheets at risk"},
+  {sec:"High-Yield Issuers",gics:"Cross-Sector",out:"Underperform",dir:"\u25bc Underweight",drv:"CCC at 13.62% \u2192 default risk rising"}
+];
+
+// ===== RENDER DASHBOARD CARDS =====
+const cardsHTML = nominalYields.filter(y => ['Fed Funds','2yr','5yr','10yr','30yr'].includes(y.m)).map(y => {
+  const sc = y.signal.toLowerCase().replace(' ','-');
+  const momDir = y.mom > 0 ? 'up' : y.mom < 0 ? 'down' : 'flat';
+  const arrow = y.mom > 0 ? '\u25b2' : y.mom < 0 ? '\u25bc' : '\u25c6';
+  return `<div class="card">
+    <div class="card-label">${y.m}</div>
+    <div class="card-value" style="color: var(--text-primary)">${y.y.toFixed(2)}%</div>
+    <div class="card-change ${momDir}">${arrow} ${Math.abs(y.mom*100).toFixed(0)}bp MoM</div>
+    <div class="signal-badge signal-${sc}">${y.signal}</div>
+  </div>`;
+}).join('');
+
+// Add credit cards
+const creditCards = creditSummary.map(c => {
+  const sc = c.signal.toLowerCase();
+  const momDir = c.mom > 0 ? 'up' : 'down';
+  return `<div class="card">
+    <div class="card-label">${c.idx}</div>
+    <div class="card-value" style="color: ${c.signal==='Stress'?'var(--red)':'var(--text-primary)'}">${c.y.toFixed(2)}%</div>
+    <div class="card-change ${momDir}">\u25b2 ${Math.abs(c.mom)}bp MoM Â· Sprd: ${c.spread}bp</div>
+    <div class="signal-badge signal-${sc}">${c.signal}</div>
+  </div>`;
+}).join('');
+
+document.getElementById('yield-cards').innerHTML = cardsHTML + creditCards;
+
+// ===== RENDER REGIME =====
+document.getElementById('regime-grid').innerHTML = regime.map(r =>
+  `<div class="regime-item">
+    <div class="regime-label">${r.signal}</div>
+    <div class="regime-value" style="color: ${r.color}">${r.current}</div>
+    <div class="regime-tag" style="background: ${r.color}22; color: ${r.color}">${r.regime} Â· ${r.trend}</div>
+  </div>`
+).join('');
+
+// ===== CHARTS =====
+const chartDefaults = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: {
+    legend: { labels: { color: '#ffffff', font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }, boxWidth: 14, padding: 18 }},
+    tooltip: {
+      backgroundColor: '#1a2438', borderColor: '#2a3f5f', borderWidth: 1,
+      titleFont: { family: 'JetBrains Mono', size: 12, weight: 'bold' },
+      bodyFont: { family: 'JetBrains Mono', size: 12 },
+      padding: 12, displayColors: true
+    }
+  },
+  scales: {
+    x: { grid: { color: '#1e2d4433' }, ticks: { color: '#e2e8f0', font: { family: 'JetBrains Mono', size: 11, weight: 'bold' }}},
+    y: { grid: { color: '#1e2d4444' }, ticks: { color: '#e2e8f0', font: { family: 'JetBrains Mono', size: 11, weight: 'bold' }}}
+  }
+};
+
+// Yield Curve Chart
+new Chart(document.getElementById('yieldCurveChart'), {
+  type: 'line',
+  data: {
+    labels: curveLabels,
+    datasets: curveDates.map(c => ({
+      label: c.label, data: c.data,
+      borderColor: c.color, backgroundColor: c.color + '11',
+      borderWidth: c.width, pointRadius: c.width > 2 ? 4 : 2,
+      pointBackgroundColor: c.color, tension: 0.3, fill: false
+    }))
+  },
+  options: {...chartDefaults,
+    scales: {...chartDefaults.scales,
+      y: {...chartDefaults.scales.y, title: { display: true, text: 'Yield %', color: '#e2e8f0', font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }}}
+    }
+  }
+});
+
+// TIPS Chart
+new Chart(document.getElementById('tipsChart'), {
+  type: 'bar',
+  data: {
+    labels: tipsData.map(t => t.m.replace(' TIPS','')),
+    datasets: [
+      { label: 'Real Yield %', data: tipsData.map(t => t.real), backgroundColor: '#38bdf8aa', borderColor: '#38bdf8', borderWidth: 1, borderRadius: 4 },
+      { label: 'Breakeven %', data: tipsData.map(t => t.be), backgroundColor: '#fbbf24aa', borderColor: '#fbbf24', borderWidth: 1, borderRadius: 4 }
+    ]
+  },
+  options: {...chartDefaults, scales: {...chartDefaults.scales}}
+});
+
+// Corp Yield Chart
+new Chart(document.getElementById('corpYieldChart'), {
+  type: 'line',
+  data: {
+    labels: corpTS.map(c => c.d.slice(5)),
+    datasets: [
+      { label: '10yr Treasury', data: corpTS.map(c => c.t10), borderColor: '#5a6f8f', borderWidth: 1.5, pointRadius: 0, tension: 0.3, yAxisID: 'y' },
+      { label: 'AAA', data: corpTS.map(c => c.aaa), borderColor: '#38bdf8', borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: 'y' },
+      { label: 'BBB', data: corpTS.map(c => c.bbb), borderColor: '#fbbf24', borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: 'y' },
+      { label: 'CCC', data: corpTS.map(c => c.ccc), borderColor: '#ff6b6b', borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: 'y1' }
+    ]
+  },
+  options: {...chartDefaults,
+    scales: {
+      x: chartDefaults.scales.x,
+      y: {...chartDefaults.scales.y, position: 'left', title: { display: true, text: 'IG Yield %', color: '#e2e8f0', font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }}},
+      y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#ff6b6b', font: { family: 'JetBrains Mono', size: 11, weight: 'bold' }}, title: { display: true, text: 'CCC Yield %', color: '#ff6b6b', font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }}}
+    }
+  }
+});
+
+// ETF Chart (indexed to 100)
+const etfBase = etfTS[0];
+new Chart(document.getElementById('etfChart'), {
+  type: 'line',
+  data: {
+    labels: etfTS.map(e => e.d.slice(5)),
+    datasets: [
+      { label: 'TLT', data: etfTS.map(e => (e.tlt/etfBase.tlt*100).toFixed(2)), borderColor: '#5a6f8f', borderWidth: 2, pointRadius: 0, tension: 0.3 },
+      { label: 'LQD', data: etfTS.map(e => (e.lqd/etfBase.lqd*100).toFixed(2)), borderColor: '#38bdf8', borderWidth: 2, pointRadius: 0, tension: 0.3 },
+      { label: 'JNK', data: etfTS.map(e => (e.jnk/etfBase.jnk*100).toFixed(2)), borderColor: '#fbbf24', borderWidth: 2, pointRadius: 0, tension: 0.3 },
+      { label: 'HYG', data: etfTS.map(e => (e.hyg/etfBase.hyg*100).toFixed(2)), borderColor: '#ff6b6b', borderWidth: 2, pointRadius: 0, tension: 0.3 }
+    ]
+  },
+  options: {...chartDefaults,
+    scales: {...chartDefaults.scales,
+      y: {...chartDefaults.scales.y, title: { display: true, text: 'Indexed (100 = start)', color: '#e2e8f0', font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }}}
+    }
+  }
+});
+
+// Rate Trend Chart
+new Chart(document.getElementById('rateTrendChart'), {
+  type: 'line',
+  data: {
+    labels: weeklyTrend.map(w => w.d),
+    datasets: [
+      { label: '1yr Implied Cuts', data: weeklyTrend.map(w => w.c1), borderColor: '#00d68f', borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#00d68f', tension: 0.3, yAxisID: 'y' },
+      { label: '2yr Implied Cuts', data: weeklyTrend.map(w => w.c2), borderColor: '#38bdf8', borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#38bdf8', tension: 0.3, yAxisID: 'y' },
+      { label: '10yr Breakeven', data: weeklyTrend.map(w => w.be), borderColor: '#fbbf24', borderWidth: 1.5, borderDash: [5,3], pointRadius: 3, tension: 0.3, yAxisID: 'y1' }
+    ]
+  },
+  options: {...chartDefaults,
+    scales: {
+      x: chartDefaults.scales.x,
+      y: {...chartDefaults.scales.y, title: { display: true, text: 'Implied Cuts (25bp)', color: '#e2e8f0', font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }}},
+      y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#fbbf24', font: { family: 'JetBrains Mono', size: 11, weight: 'bold' }}, title: { display: true, text: 'Breakeven %', color: '#fbbf24', font: { family: 'JetBrains Mono', size: 12, weight: 'bold' }}}
+    }
+  }
+});
+
+// ===== TABLES =====
+// Spread table
+document.getElementById('spread-table-body').innerHTML = spreadSummary.map(s => {
+  const riskColor = s.risk === 'Risk-Off' ? 'var(--red)' : 'var(--amber)';
+  return `<tr>
+    <td style="font-family: Inter, sans-serif; font-weight: 500;">${s.pair}</td>
+    <td>${s.current}</td>
+    <td class="${s.wow < 0 ? 'down' : 'up'}">${s.wow > 0 ? '+' : ''}${s.wow}</td>
+    <td class="up">+${s.mom}</td>
+    <td>${s.dir}</td>
+    <td style="color: ${riskColor}">${s.risk}</td>
+  </tr>`;
+}).join('');
+
+// Scenario table
+document.getElementById('scenario-table-body').innerHTML = scenarios.map(s => {
+  const isBase = s.v === 'Base Case';
+  const viewColor = s.v === 'Base Case' ? 'var(--green)' : s.v === 'Possible' ? 'var(--blue)' : s.v === 'Tail Risk' ? 'var(--red)' : 'var(--text-muted)';
+  return `<tr ${isBase ? 'class="highlight-row"' : ''}>
+    <td style="font-family: Inter, sans-serif; font-weight: ${isBase?'600':'400'}">${s.s}</td>
+    <td>${s.m > 0 ? '+' : ''}${s.m}</td>
+    <td>${s.bp > 0 ? '+' : ''}${s.bp}</td>
+    <td>${s.ff.toFixed(2)}%</td>
+    <td style="font-weight: 600">${s.p}</td>
+    <td style="color: ${viewColor}">${s.v}</td>
+  </tr>`;
+}).join('');
+
+// Credit-equity signals
+document.getElementById('credit-equity-signals-body').innerHTML = creditEquitySignals.map(s => {
+  const impColor = s.imp === 'Bearish' ? 'var(--red)' : s.imp === 'Mixed' ? 'var(--amber)' : 'var(--green)';
+  return `<tr>
+    <td style="font-family: Inter, sans-serif; font-weight: 500;">${s.sig}</td>
+    <td>${s.read}</td>
+    <td>${s.mom}</td>
+    <td style="color: ${impColor}; font-weight: 600;">${s.imp}</td>
+    <td>${s.conf}</td>
+  </tr>`;
+}).join('');
+
+// Sector tables
+function renderSectorTable(sectors, bodyId) {
+  const order = {'Outperform':0, 'Neutral':1, 'Underperform':2};
+  const sorted = [...sectors].sort((a,b) => (order[a.out]??1) - (order[b.out]??1));
+  document.getElementById(bodyId).innerHTML = sorted.map(s => {
+    const outClass = s.out.includes('Out') ? 'outperform' : s.out.includes('Under') ? 'underperform' : 'neutral';
+    const dirClass = s.dir.includes('\u25b2') ? 'overweight' : s.dir.includes('\u25bc') ? 'underweight' : 'neutral';
+    return `<tr>
+      <td style="font-family: Inter, sans-serif; font-weight: 500;">${s.sec}</td>
+      <td style="color: var(--text-secondary)">${s.gics}</td>
+      <td><span class="outlook-pill outlook-${outClass}">${s.out}</span></td>
+      <td><span class="direction-pill dir-${dirClass}">${s.dir}</span></td>
+      <td style="font-family: Inter, sans-serif; font-size: 0.75rem; color: var(--text-secondary)">${s.drv}</td>
+    </tr>`;
+  }).join('');
+}
+renderSectorTable(rateSectors, 'rate-sectors-body');
+renderSectorTable(creditSectors, 'credit-sectors-body');
+
+// Tab switching
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Smooth scroll for nav (only for in-page anchor links)
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
