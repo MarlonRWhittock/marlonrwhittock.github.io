@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marlon Whittock | Macro Research</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #0f1520;
+  --bg-card: #151d2e;
+  --bg-card-hover: #1a2538;
+  --border: #1e2d44;
+  --border-accent: #2a3f5f;
+  --text-primary: #e8edf5;
+  --text-secondary: #c0d0e8;
+  --text-muted: #94a8c4;
+  --green: #00d4aa;
+  --green-dim: rgba(0,212,170,0.12);
+  --blue: #4a9eff;
+  --blue-dim: rgba(74,158,255,0.12);
+  --red: #ff4a6e;
+  --amber: #ffc04a;
+  --purple: #a855f7;
+  --cyan: #22d3ee;
+  --orange: #ff8c4a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'DM Sans', 'Inter', -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 3px; }
+
+/* Header */
+.header {
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg-primary);
+  backdrop-filter: blur(20px);
+}
+.header-inner {
+  max-width: 1600px; margin: 0 auto; padding: 0 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+.logo-mark {
+  width: 42px; height: 42px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.15rem; color: var(--bg-primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+.logo-text { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.02em; color: var(--text-primary); }
+.logo-text span { color: var(--text-muted); font-weight: 400; }
+.nav { display: flex; gap: 2rem; }
+.nav a {
+  color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;
+  font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav a:hover { color: var(--green); }
+.nav a.active { color: var(--green); }
+
+/* Hero */
+.hero {
+  max-width: 1600px; margin: 0 auto; padding: 5rem 3rem 4rem;
+  border-bottom: 1px solid var(--border);
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--green-dim); color: var(--green);
+  padding: 0.35rem 0.85rem; border-radius: 100px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; margin-bottom: 1.5rem;
+  border: 1px solid rgba(0,212,170,0.25);
+}
+.hero-tag .dot {
+  width: 6px; height: 6px; background: var(--green);
+  border-radius: 50%; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 {
+  font-size: 3rem; font-weight: 700; letter-spacing: -0.03em;
+  line-height: 1.15; margin-bottom: 1.25rem;
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  max-width: 800px;
+}
+.hero-subtitle {
+  font-size: 1.05rem; color: var(--text-primary); line-height: 1.75;
+  margin-bottom: 2rem;
+}
+
+/* Content Sections */
+.content { max-width: 1600px; margin: 0 auto; padding: 0 3rem; }
+
+.section {
+  padding: 4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+.section-label {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--green); margin-bottom: 0.75rem;
+}
+.section-title {
+  font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.section-text {
+  font-size: 0.92rem; color: var(--text-primary); line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+/* Cards */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px; margin-top: 2rem;
+}
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px; transition: all 0.3s ease;
+}
+.card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+.card-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; margin-bottom: 16px;
+}
+.card-heading {
+  font-size: 1.05rem; font-weight: 600; margin-bottom: 8px;
+  color: var(--text-primary);
+}
+.card-desc {
+  font-size: 0.82rem; color: var(--text-primary); line-height: 1.65;
+}
+
+/* Stat Blocks */
+.stat-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 20px; margin-top: 2rem;
+}
+.stat-block {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; text-align: center;
+}
+.stat-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem; font-weight: 700; margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Research Modules */
+.module-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 24px; margin-top: 2.5rem;
+}
+.module-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 32px; position: relative;
+  overflow: hidden; transition: all 0.3s ease;
+}
+.module-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+.module-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; border-radius: 14px 14px 0 0;
+}
+.module-card.fi::before { background: linear-gradient(90deg, var(--green), var(--blue)); }
+.module-card.ism::before { background: linear-gradient(90deg, var(--purple), var(--cyan)); }
+.module-tag {
+  display: inline-block; font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.3rem 0.7rem; border-radius: 6px; margin-bottom: 14px;
+}
+.module-tag.fi { background: rgba(0,212,170,0.12); color: var(--green); }
+.module-tag.ism { background: rgba(168,85,247,0.12); color: var(--purple); }
+.module-title {
+  font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;
+  color: var(--text-primary);
+}
+.module-desc {
+  font-size: 0.82rem; color: var(--text-primary); line-height: 1.7; margin-bottom: 20px;
+}
+.module-features {
+  list-style: none; margin-bottom: 20px;
+}
+.module-features li {
+  font-size: 0.78rem; color: var(--text-primary); padding: 6px 0;
+  border-bottom: 1px solid rgba(30,45,68,0.5);
+  display: flex; align-items: center; gap: 8px;
+}
+.module-features li:last-child { border-bottom: none; }
+.module-features li::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.module-card.fi .module-features li::before { background: var(--green); }
+.module-card.ism .module-features li::before { background: var(--purple); }
+.module-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; font-weight: 600; text-decoration: none;
+  transition: all 0.2s;
+}
+.module-link.fi { color: var(--green); }
+.module-link.ism { color: var(--purple); }
+.module-link:hover { gap: 10px; }
+
+/* Quote Block */
+.quote-block {
+  background: var(--bg-card); border-left: 3px solid var(--green);
+  border-radius: 0 12px 12px 0; padding: 24px 28px;
+  margin: 2rem 0;
+}
+.quote-text {
+  font-size: 1rem; font-style: italic; color: var(--text-primary);
+  line-height: 1.75; margin-bottom: 8px;
+}
+.quote-attr {
+  font-size: 0.78rem; color: var(--text-muted);
+}
+
+/* Strategy Cards */
+.strategy-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px; margin-top: 2rem;
+}
+.strategy-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px;
+}
+.strategy-card h4 {
+  font-size: 0.92rem; font-weight: 600; margin-bottom: 8px;
+}
+.strategy-card p {
+  font-size: 0.8rem; color: var(--text-primary); line-height: 1.65;
+}
+.strategy-card .tag-up { color: var(--green); }
+.strategy-card .tag-down { color: var(--red); }
+
+/* Footer */
+.footer {
+  text-align: center; padding: 3rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.78rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .nav { display: none; }
+  .hero h1 { font-size: 2rem; }
+  .hero { padding: 3rem 1.5rem 2.5rem; }
+  .content { padding: 0 1.5rem; }
+  .header-inner { padding: 0 1.5rem; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .module-grid { grid-template-columns: 1fr; }
+  .card-grid { grid-template-columns: 1fr; }
+  .strategy-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.6rem; }
+  .stat-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html" style="text-decoration:none; color:inherit;">
+      <div class="logo-mark">MW</div>
+      <div class="logo-text">Marlon Whittock <span>| Macro Research</span></div>
+    </a>
+    <nav class="nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="fixed-income.html">Fixed Income</a>
+      <a href="ism-pmi-dashboard.html">ISM PMI &amp; NMI</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag"><span class="dot"></span> Live Research</div>
+  <h1>Top-Down Macro Analysis for Smarter Portfolio Positioning</h1>
+  <p class="hero-subtitle">Independent, data-driven macro research that translates economic leading indicators into actionable investment signals. Built for traders and investors who want to see where the economy is heading 3 to 12 months from now &mdash; and position their portfolios accordingly. Whether you're a trader operating on a one-to-three month horizon or a long-term investor building positions over six months or more, the macro cycle drives your returns. Knowing the direction of the business cycle before it shows up in headlines is where alpha is generated.</p>
+  <p class="hero-subtitle">Historically, traders and investors who correctly anticipated economic turning points &mdash; the shift from expansion to contraction, or the early stages of recovery &mdash; captured outsized returns because they were positioned ahead of the crowd. Markets reward foresight, not hindsight. The data on this platform is designed to give you that forward-looking edge: track the same leading indicators that institutional macro desks use to generate alpha, identify inflection points before consensus catches on, and build conviction around high-probability trades rooted in economic fundamentals rather than noise.</p>
+</section>
+
+<div class="content">
+
+<!-- WHAT IS TOP-DOWN ANALYSIS -->
+<div class="section">
+  <div class="section-label">The Framework</div>
+  <h2 class="section-title">What Is Top-Down Macro Analysis?</h2>
+  <p class="section-text">Top-down analysis starts with the broadest view of the economy and narrows down to individual sectors and securities. Instead of picking stocks based on company fundamentals alone, a top-down approach first answers the most important question in investing: where is the economy heading? Is GDP likely to accelerate or contract over the next several quarters? Is inflation rising or falling? Is the Federal Reserve tightening or easing?</p>
+  <p class="section-text">These macro conditions determine roughly 60&ndash;70% of stock market returns in any given year. Getting the macro direction right matters far more than any single stock pick. When the economy is expanding, the tide lifts most boats. When it's contracting, even great companies see their share prices fall. The investor who understands the macro cycle has a structural edge over those who ignore it.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon" style="background: var(--green-dim);">
+        <span style="color: var(--green); font-size: 1.1rem;">&#9650;</span>
+      </div>
+      <div class="card-heading">Economy &rarr; Sectors &rarr; Securities</div>
+      <div class="card-desc">Start with macro conditions (GDP, inflation, rates), identify which sectors benefit from those conditions, then select the best securities within those sectors. This is how the world's top hedge funds and institutional investors operate.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background: var(--blue-dim);">
+        <span style="color: var(--blue); font-size: 1.1rem;">&#9679;</span>
+      </div>
+      <div class="card-heading">Leading Indicators Tell the Future</div>
+      <div class="card-desc">Economic data like the ISM PMI, yield curve dynamics, and credit spreads are leading indicators &mdash; they move before the economy does. By tracking them systematically, you can anticipate shifts in GDP growth, corporate earnings, and market direction months in advance.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background: rgba(168,85,247,0.12);">
+        <span style="color: var(--purple); font-size: 1.1rem;">&#9830;</span>
+      </div>
+      <div class="card-heading">Both Sides of the Trade</div>
+      <div class="card-desc">A proper macro framework doesn't just tell you what to buy &mdash; it tells you what to sell short. In a contracting economy, short positions in vulnerable sectors can generate substantial returns. Long/short portfolio management means you can profit in any environment.</div>
+    </div>
+  </div>
+</div>
+
+<!-- WHO USES THIS -->
+<div class="section">
+  <div class="section-label">The Audience</div>
+  <h2 class="section-title">Who Uses Top-Down Analysis?</h2>
+  <p class="section-text">Top-down macro analysis is the backbone of decision-making at the world's largest investment firms. Global macro hedge funds, central banks, pension funds, and sovereign wealth funds all rely on this framework to allocate hundreds of billions of dollars. The methodology isn't limited to institutions, though &mdash; individual investors who adopt a macro-aware approach consistently outperform those who rely solely on bottom-up stock picking.</p>
+
+  <div class="stat-row">
+    <div class="stat-block">
+      <div class="stat-number" style="color: var(--green);">60-70%</div>
+      <div class="stat-label">Of returns driven by macro</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color: var(--blue);">3-12 mo</div>
+      <div class="stat-label">Forward-looking horizon</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color: var(--purple);">Long/Short</div>
+      <div class="stat-label">Profit in any market</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" style="color: var(--amber);">Edge</div>
+      <div class="stat-label">Over bottom-up only</div>
+    </div>
+  </div>
+
+  <p class="section-text" style="margin-top: 2rem;">Whether you're a retail investor managing your own retirement account or an institutional portfolio manager running a multi-billion dollar book, the value proposition is the same: understanding the macro cycle helps you avoid the catastrophic drawdowns that destroy long-term compounding, and position aggressively when conditions favor risk-taking.</p>
+</div>
+
+<!-- GDP & MARKETS -->
+<div class="section">
+  <div class="section-label">The Connection</div>
+  <h2 class="section-title">Macro Data, GDP, and Stock Market Returns</h2>
+  <p class="section-text">The link between macro leading indicators and stock market performance is well-established and remarkably consistent over time. When leading indicators like the ISM PMI are above 50 and rising, GDP growth tends to accelerate in the following quarters. When GDP accelerates, corporate earnings grow, and stock prices follow. The reverse is equally true &mdash; when leading indicators roll over, it's an early warning that earnings and prices are likely to follow.</p>
+  <p class="section-text">The key insight is timing. Stock markets are forward-looking and typically price in economic shifts 3 to 6 months before they appear in official GDP data. But leading indicators move even earlier than markets. This creates a window of opportunity: by monitoring ISM data, yield curve dynamics, and credit conditions, you can identify regime changes before the market fully prices them in.</p>
+
+  <div class="quote-block">
+    <div class="quote-text">"The macro environment is the single biggest determinant of investment returns. Ignoring it is like sailing without checking the weather &mdash; you might get lucky for a while, but eventually the storm catches you."</div>
+    <div class="quote-attr">&mdash; The case for top-down investing</div>
+  </div>
+
+  <div class="strategy-grid">
+    <div class="strategy-card">
+      <h4><span class="tag-up">&#9650;</span> Expansion Positioning</h4>
+      <p>When leading indicators signal economic acceleration (PMI rising above 50, yield curve steepening, credit spreads tightening), overweight cyclical sectors like Technology, Industrials, Consumer Discretionary, and Financials. Go long risk assets, extend duration in credit, and reduce cash allocations. The economy is working in your favor.</p>
+    </div>
+    <div class="strategy-card">
+      <h4><span class="tag-down">&#9660;</span> Contraction Positioning</h4>
+      <p>When indicators signal deceleration (PMI falling below 50, yield curve inverting, credit spreads widening), rotate into defensive sectors like Utilities, Healthcare, and Consumer Staples. Build short positions in the most cyclically exposed sectors. Extend Treasury duration to capture the flight-to-quality rally. Cash becomes a strategic asset.</p>
+    </div>
+  </div>
+</div>
+
+<!-- THE EDGE -->
+<div class="section">
+  <div class="section-label">The Value</div>
+  <h2 class="section-title">The Importance of Knowing Where We're Going</h2>
+  <p class="section-text">Most investors are reactive. They read the news, see that GDP came in strong or weak, and then adjust their portfolios after the fact. By then, the move has already happened. The market has already priced in the data. You're buying high and selling low.</p>
+  <p class="section-text">A macro-first approach flips this dynamic. By tracking leading indicators in real time &mdash; the ISM Manufacturing PMI, Services NMI, Treasury yield curves, credit spreads, employment trends &mdash; you develop a forward-looking view of where the economy is heading 3, 6, and 12 months from now. This isn't speculation or guesswork. These are time-tested, data-driven signals that institutional investors have relied on for decades.</p>
+  <p class="section-text">The practical benefit is straightforward: if you know the economy is likely to accelerate over the next two quarters, you can position your portfolio aggressively in growth-sensitive assets before the crowd catches on. If you see contraction signals building, you can reduce risk, build short positions, and protect capital while others are still holding. From a long/short portfolio management perspective, this means you can generate returns whether the market is going up or down. You're not dependent on a bull market to make money. You're dependent on being right about the direction &mdash; and the data gives you the tools to be right more often than not.</p>
+</div>
+
+<!-- RESEARCH MODULES -->
+<div class="section">
+  <div class="section-label">The Research</div>
+  <h2 class="section-title">Research Coverage</h2>
+  <p class="section-text">This platform provides two core research modules, each designed to cover a critical piece of the macro puzzle. Together, they give you a comprehensive view of the U.S. economic landscape and its implications for portfolio positioning.</p>
+
+  <div class="module-grid">
+    <div class="module-card fi">
+      <span class="module-tag fi">Fixed Income &amp; Credit</span>
+      <div class="module-title">U.S. Fixed Income &amp; Credit Market Intelligence</div>
+      <div class="module-desc">Deep analysis of Treasury yields, corporate credit spreads, and their transmission into GDP growth expectations and equity sector positioning.</div>
+      <ul class="module-features">
+        <li>Treasury yield curve analysis across 2Y, 5Y, 10Y, 30Y maturities</li>
+        <li>Investment-grade and high-yield corporate credit spreads</li>
+        <li>Fed rate outlook and monetary policy implications</li>
+        <li>Sector rotation signals from yield curve dynamics</li>
+        <li>Real-time data with institutional-grade methodology</li>
+      </ul>
+      <a href="fixed-income.html" class="module-link fi">Explore Fixed Income Research &rarr;</a>
+    </div>
+
+    <div class="module-card ism">
+      <span class="module-tag ism">Economic Activity</span>
+      <div class="module-title">ISM PMI &amp; NMI Economic Activity Analysis</div>
+      <div class="module-desc">Comprehensive analysis of ISM Manufacturing PMI and Services NMI &mdash; the leading indicators that predict GDP direction, inflation trends, and employment shifts.</div>
+      <ul class="module-features">
+        <li>Manufacturing PMI sub-index deep dives with forward guidance</li>
+        <li>Services NMI component analysis across all key indicators</li>
+        <li>12-month heat maps for trend identification</li>
+        <li>Sector-level analysis with GICS investment positioning</li>
+        <li>Industry commentary for on-the-ground intelligence</li>
+      </ul>
+      <a href="ism-pmi-dashboard.html" class="module-link ism">Explore ISM PMI Research &rarr;</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>&copy; 2026 Marlon Whittock | Macro Research. Independent analysis for educational purposes. Not financial advice.</p>
+</footer>
+
+<!-- Smooth scroll -->
+<script>
+document.querySelectorAll('.nav a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      const offset = document.querySelector('.header').offsetHeight + 10;
+      window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
